@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="xero">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/xero.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
