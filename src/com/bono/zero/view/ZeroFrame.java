@@ -29,9 +29,7 @@ public class ZeroFrame extends JFrame {
     }
 
 
-    public void setWindowListener(WindowListener l) {
-        this.addWindowListener(l);
-    }
+
 
     public void addMenuBar(JMenuBar menuBar) {
         setJMenuBar(menuBar);

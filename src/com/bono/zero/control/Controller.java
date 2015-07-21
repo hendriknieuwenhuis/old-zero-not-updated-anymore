@@ -17,26 +17,26 @@ import java.util.List;
 public class Controller {
 
     // The current playlist
-    Playlist playlist;
+    private Playlist playlist;
     // The server status
-    ServerStatus serverStatus;
+    private ServerStatus serverStatus;
     // the frame of the interface
-    ZeroFrame zeroFrame;
+    //private ZeroFrame zeroFrame;
     // the connection class
-    Server server;
+    private Server server;
     // the connection settings
-    Settings settings;
+    private Settings settings;
     // the directory structure
-    Directory directory;
+    private Directory directory;
 
-    ServerMonitor serverMonitor;
+    private ServerMonitor serverMonitor;
 
     // Listeners
-    TreeMouseListener treeMouseListener;
-    TableMouseListener tableMouseListener;
-    ControlsListener controlsListener;
-    ConfigListener configListener;
-    PopupListener popupListener;
+    private TreeMouseListener treeMouseListener;
+    private TableMouseListener tableMouseListener;
+    private ControlsListener controlsListener;
+    private ConfigListener configListener;
+    private PopupListener popupListener;
 
     public Controller() {}
 
@@ -106,9 +106,9 @@ public class Controller {
         return popupListener;
     }
 
-    public WindowListener getZeroFrameListener() {
-        return new ZeroFrameListener();
-    }
+    //public WindowListener getZeroFrameListener() {
+    //    return new ZeroFrameListener();
+    //}
 
     public void addPlaylist(Playlist playlist) {
         this.playlist = playlist;
@@ -119,7 +119,7 @@ public class Controller {
     }
 
     public void addZeroFrame(ZeroFrame zeroFrame) {
-        this.zeroFrame = zeroFrame;
+        //this.zeroFrame = zeroFrame;
     }
 
     public void addServer(Server server) {
@@ -152,6 +152,10 @@ public class Controller {
     
     public Directory getDirectory() {
         return directory;
+    }
+
+    public ServerMonitor getServerMonitor() {
+        return serverMonitor;
     }
 
 
@@ -319,6 +323,7 @@ public class Controller {
 
     }
 
+    /*
     private class ZeroFrameListener implements WindowListener {
 
         @Override
@@ -364,6 +369,6 @@ public class Controller {
         public void windowDeactivated(WindowEvent e) {
 
         }
-    }
+    }*/
 
 }

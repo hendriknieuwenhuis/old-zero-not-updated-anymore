@@ -110,7 +110,7 @@ public class Launcher {
         controller.addServerMonitor(serverMonitor);
 
         ZeroFrame view = new ZeroFrame();
-        view.addWindowListener(controller.getZeroFrameListener());
+        //view.addWindowListener(controller.getZeroFrameListener());
         view.addPanel(splitPane, BorderLayout.CENTER);
         view.addPanel(playbackControls, BorderLayout.NORTH);
         view.addMenuBar(zeroMenuBar);
