@@ -1,0 +1,3 @@
+# start de zero MPDserver client
+
+java -cp dist/xero.jar -Dcom.apple.macos.useScreenMenuBar=true -Xdock:name="Zero" com.bono.zero.view.Main host:192.168.2.3 port:6600
