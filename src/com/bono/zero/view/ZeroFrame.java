@@ -12,11 +12,25 @@ import javax.swing.border.EmptyBorder;
  * holds the components of the GUI.
  * It is initialised with a JPanel with a BorderLayout and an
  * EmptyBorder set (5,5,5,5).
- * A windows listener can be set and a JMenuBar can be  added.</p>
+ * </p>
  */
 public class ZeroFrame extends JFrame {
-	
-	private JPanel mainPanel;      // holds the components of the frame
+
+    // holds the components of the frame
+    private JPanel mainPanel;
+
+    // JSplitpane for the center view.
+    private JSplitPane centerSplitPane;
+
+    // The size of the screen.
+    private Rectangle bounds;
+
+    private DirectoryPanel directoryPanel;
+    private PlaylistPanel playlistPanel;
+    private PlaybackControls playbackControls;
+    private PlaylistPopup playlistPopup;
+    private ZeroMenuBar zeroMenuBar;
+
 
     public ZeroFrame() {
         super();
@@ -26,6 +40,42 @@ public class ZeroFrame extends JFrame {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(5,5,5,5));
+    }
+
+    public ZeroFrame(Rectangle bounds) {
+        super();
+        this.bounds = bounds;
+        setTitle("Zero");
+        init();
+    }
+
+    // init the frame with the panels that display
+    // the music map, playlist, controls, etc.
+    private void init() {
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        directoryPanel = new DirectoryPanel();
+
+        playlistPanel = new PlaylistPanel();
+
+        playlistPopup = new PlaylistPopup();
+
+        playlistPanel.addPopupMenu(playlistPopup);
+
+        centerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, directoryPanel, playlistPanel);
+        centerSplitPane.setContinuousLayout(true);
+        centerSplitPane.setDividerLocation((bounds.width/3));
+
+        playbackControls = new PlaybackControls();
+
+        zeroMenuBar = new ZeroMenuBar();
+
+        mainPanel.add(centerSplitPane, BorderLayout.CENTER);
+        mainPanel.add(playbackControls, BorderLayout.NORTH);
+        getContentPane().add(mainPanel);
+        setJMenuBar(zeroMenuBar);
     }
 
 
@@ -55,6 +105,25 @@ public class ZeroFrame extends JFrame {
         setSize(dimension);
         setVisible(visible);
     }
-	
+
+    public DirectoryPanel getDirectoryPanel() {
+        return directoryPanel;
+    }
+
+    public PlaylistPanel getPlaylistPanel() {
+        return playlistPanel;
+    }
+
+    public PlaybackControls getPlaybackControls() {
+        return playbackControls;
+    }
+
+    public PlaylistPopup getPlaylistPopup() {
+        return playlistPopup;
+    }
+
+    public ZeroMenuBar getZeroMenuBar() {
+        return zeroMenuBar;
+    }
 
 }

@@ -74,20 +74,23 @@ public class Launcher {
 
         controller.addSettings(settings);
 
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // added this to zeroframe.
+        //
         // create the directory panel
         DirectoryPanel directoryPanel = new DirectoryPanel();
-        directoryPanel.addMouseAdapter(controller.getTreeMouseListener());
-        directoryPanel.addTreeModel(directory.getDirectory());
+        directoryPanel.addMouseAdapter(controller.getTreeMouseListener());  // not this
+        directoryPanel.addTreeModel(directory.getDirectory());  // not this
 
         // create the playlist panel
         PlaylistPanel playlistPanel = new PlaylistPanel();
-        playlistPanel.addTableMouseListener(controller.getTableMouseListener());
-        playlistPanel.setTableModel(playlist);
-        playlist.addObserver("Playlist", playlistPanel);
-        serverStatus.addObserver("Song", playlistPanel);
+        playlistPanel.addTableMouseListener(controller.getTableMouseListener());  // not this
+        playlistPanel.setTableModel(playlist);  // not this
+        playlist.addObserver("Playlist", playlistPanel);  // not this
+        serverStatus.addObserver("Song", playlistPanel);  // not this
         PlaylistPopup playlistPopup = new PlaylistPopup();
         //playlistPopup.addMenuItemListener("JMenuItem.remove", controller.getRemoveListener(playlistPanel.getSelectionModel()));
-        playlistPopup.addAllMenuItemListener(controller.getPopupListener(playlistPanel.getSelectionModel()));
+        playlistPopup.addAllMenuItemListener(controller.getPopupListener(playlistPanel.getSelectionModel()));  // not this
         playlistPanel.addPopupMenu(playlistPopup);
 
         // creating a splitpane for the center view
@@ -96,15 +99,16 @@ public class Launcher {
         splitPane.setDividerLocation((bounds.width/3));
 
         PlaybackControls playbackControls = new PlaybackControls();
-        playbackControls.addAllButtonActionListener(controller.getControlsHandler());
-        serverStatus.addObserver("State", playbackControls);
-        serverStatus.addObserver("Repeat", playbackControls);
-        serverStatus.addObserver("Random", playbackControls);
+        playbackControls.addAllButtonActionListener(controller.getControlsHandler());  // not this
+        serverStatus.addObserver("State", playbackControls);  // not this
+        serverStatus.addObserver("Repeat", playbackControls);  // not this
+        serverStatus.addObserver("Random", playbackControls);  // not this
 
         ZeroMenuBar zeroMenuBar = new ZeroMenuBar();
-        serverStatus.addObserver("Consume", zeroMenuBar);
-        serverStatus.addObserver("Single", zeroMenuBar);
-        zeroMenuBar.addCheckBoxListeners(controller.getConfigListener());
+        serverStatus.addObserver("Consume", zeroMenuBar);  // not this
+        serverStatus.addObserver("Single", zeroMenuBar);  // not this
+        zeroMenuBar.addCheckBoxListeners(controller.getConfigListener());  // not this
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ServerMonitor serverMonitor = new ServerMonitor(new UpdaterController(controller));
         controller.addServerMonitor(serverMonitor);
@@ -131,7 +135,7 @@ public class Launcher {
         if (args != null) {
 
             String host = null;
-            int port = Settings.STANDARD_PORT;
+            int port = 6600;
 
             for (String arg : args) {
                 if (arg.startsWith(HOST_PREFIX)) {
@@ -155,7 +159,7 @@ public class Launcher {
         // if no argument for the host is given!
         try {
             // loading the settings from settings.set file.
-            settings = Settings.loadSettings();
+            settings = SettingsLoader.loadSettings();
             testSettings(settings, server);
             return settings;
         } catch (ClassNotFoundException e) {
@@ -168,7 +172,7 @@ public class Launcher {
             System.out.println("Continue, and go testing");
             testSettings(settings, server);
             try {
-                settings.saveSettings();
+                SettingsLoader.saveSettings(settings);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

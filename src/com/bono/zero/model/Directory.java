@@ -28,8 +28,13 @@ public class Directory extends Observable {
 		music = new DefaultMutableTreeNode("music",true);
 		directory = new DefaultTreeModel(music);
 	}
-		
+
+	@Deprecated
 	public TreeModel getDirectory() {
+		return directory;
+	}
+
+	public TreeModel getModel() {
 		return directory;
 	}
 	

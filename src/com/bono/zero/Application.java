@@ -12,46 +12,65 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
  * Created by hendriknieuwenhuis on 21/07/15.
  */
-public class Application implements WindowListener {
+public class Application extends WindowAdapter {
 
     private static Application application;
+
+    private static Rectangle bounds;
 
     private Server server;
     private Directory directory;
     private Settings settings;
     private Controller controller;
 
-    private Application() {
-        System.out.printf("%s\n", "initialized");
-    }
+
 
     public static void launch(final String[] args) {
         application = new Application();
 
         application.setLookAndFeel();
 
-        /*
-        -> -> !!!! Needs a look at the logic of this !!!! <- <-
-         */
-        if (args != null) {
-            new Arguments(application);
-        }
+        //application.init();
 
-        application.start(new ZeroFrame());
+        application.screenSize();
+
+        application.start(new ZeroFrame(bounds));
     }
 
+
     protected void start(JFrame frame) {
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.addWindowListener(this);
-        frame.setSize(screenSize());
-        frame.setVisible(true);
+        ZeroFrame zeroFrame = (ZeroFrame) frame;
+
+        Directory directory = new Directory();
+        zeroFrame.getDirectoryPanel().addTreeModel(directory.getModel());
+
+        zeroFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        zeroFrame.addWindowListener(this);
+        zeroFrame.setSize(screenSize());
+        zeroFrame.setVisible(true);
+    }
+
+    /*
+    Load the settings of the client. When there are no
+    settings to load from file initialize with default settings.
+     */
+    protected void init() {
+        try {
+            settings = SettingsLoader.loadSettings();
+        } catch (ClassNotFoundException e) {
+            settings = Settings.getSettings();
+        } catch (IOException e) {
+
+        }
+
     }
 
     // Sets the look and feel
@@ -90,8 +109,8 @@ public class Application implements WindowListener {
     }
 
     protected Dimension screenSize() {
-        final Rectangle bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-        return new Dimension((bounds.width / 2), (bounds.height / 2));
+        bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        return new Dimension(bounds.width, bounds.height);
     }
 
     @Override
