@@ -55,6 +55,8 @@ public class Application extends WindowAdapter {
     protected void start(JFrame frame) {
         ZeroFrame zeroFrame = (ZeroFrame) frame;
 
+        System.out.printf("%s\n", settings.getHost());
+
         // display the splash screen to indicate the application is starting
         SplashScreen.getSplashScreen(bounds);
 
@@ -228,6 +230,10 @@ public class Application extends WindowAdapter {
 
     public Server getServer() {
         return server;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
     public Settings getSettings() {

@@ -155,9 +155,10 @@ public class Server {
 	private synchronized String connect() throws IllegalArgumentException, IOException {
 		BufferedReader in;
 		String line;
+		InetSocketAddress customAddress = new InetSocketAddress("192.168.2.10", 6600);
 		this.socket = new Socket();
 		try {
-            socket.connect(address, 5000);    // connect
+            socket.connect(customAddress, 5000);    // connect
             // System.out.println("pasted socket.connect");
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             line = in.readLine();

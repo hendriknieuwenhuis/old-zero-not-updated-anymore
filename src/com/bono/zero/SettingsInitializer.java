@@ -8,6 +8,11 @@ import java.awt.*;
 import java.io.IOException;
 
 /**
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * Change this class in a callable<Settings> class
+ * so it returns the settings and doesn't need
+ * dependencies on application!!!!!!!!!!!!!!!!!!!!
+ *
  * Created by hendriknieuwenhuis on 23/07/15.
  */
 public class SettingsInitializer implements Runnable {
@@ -19,12 +24,24 @@ public class SettingsInitializer implements Runnable {
     private Settings settings;
     private Rectangle bounds;
 
+    private Application application;
+
     public SettingsInitializer(Application application) {
+        this.application = application;
         server = application.getServer();
         settings = application.getSettings();
         bounds = application.getBounds();
     }
 
+    /*
+    ----- !!!!!! WARNING !!!!! ------
+    Looks like incorrect settings are
+    passed along.
+
+    Could be caused by fault in the
+    server class.
+    ----- !!!!!!!!!!!!!!!!!!!! ------
+     */
     @Override
     public void run() {
         if (server == null) {
@@ -49,10 +66,10 @@ public class SettingsInitializer implements Runnable {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            //return settings;
+            application.setSettings(settings);
         }
 
-        //return settings;
+        application.setSettings(settings);
 
     }
 
