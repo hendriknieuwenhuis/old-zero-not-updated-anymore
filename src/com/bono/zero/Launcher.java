@@ -75,39 +75,39 @@ public class Launcher {
         controller.addSettings(settings);
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // added this to zeroframe.
-        //
+
         // create the directory panel
-        DirectoryPanel directoryPanel = new DirectoryPanel();
-        directoryPanel.addMouseAdapter(controller.getTreeMouseListener());  // not this
-        directoryPanel.addTreeModel(directory.getDirectory());  // not this
+        DirectoryPanel directoryPanel = new DirectoryPanel();  // done! in zeroframe
+        directoryPanel.addMouseAdapter(controller.getTreeMouseListener());  // done! in application
+        directoryPanel.addTreeModel(directory.getDirectory());  // done! in application
 
         // create the playlist panel
-        PlaylistPanel playlistPanel = new PlaylistPanel();
+        PlaylistPanel playlistPanel = new PlaylistPanel();  // done! in zeroframe
         playlistPanel.addTableMouseListener(controller.getTableMouseListener());  // not this
         playlistPanel.setTableModel(playlist);  // not this
         playlist.addObserver("Playlist", playlistPanel);  // not this
         serverStatus.addObserver("Song", playlistPanel);  // not this
-        PlaylistPopup playlistPopup = new PlaylistPopup();
+        PlaylistPopup playlistPopup = new PlaylistPopup();  // done! in zeroframe
         //playlistPopup.addMenuItemListener("JMenuItem.remove", controller.getRemoveListener(playlistPanel.getSelectionModel()));
         playlistPopup.addAllMenuItemListener(controller.getPopupListener(playlistPanel.getSelectionModel()));  // not this
         playlistPanel.addPopupMenu(playlistPopup);
 
         // creating a splitpane for the center view
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, directoryPanel, playlistPanel);
-        splitPane.setContinuousLayout(true);
-        splitPane.setDividerLocation((bounds.width/3));
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, directoryPanel, playlistPanel);  // done! in zeroframe
+        splitPane.setContinuousLayout(true);  // done! in zeroframe
+        splitPane.setDividerLocation((bounds.width/3));  // done! in zeroframe
 
-        PlaybackControls playbackControls = new PlaybackControls();
+        PlaybackControls playbackControls = new PlaybackControls();  // done! in zeroframe
         playbackControls.addAllButtonActionListener(controller.getControlsHandler());  // not this
         serverStatus.addObserver("State", playbackControls);  // not this
         serverStatus.addObserver("Repeat", playbackControls);  // not this
         serverStatus.addObserver("Random", playbackControls);  // not this
 
-        ZeroMenuBar zeroMenuBar = new ZeroMenuBar();
+        ZeroMenuBar zeroMenuBar = new ZeroMenuBar();  // done! in zeroframe
         serverStatus.addObserver("Consume", zeroMenuBar);  // not this
         serverStatus.addObserver("Single", zeroMenuBar);  // not this
         zeroMenuBar.addCheckBoxListeners(controller.getConfigListener());  // not this
+
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ServerMonitor serverMonitor = new ServerMonitor(new UpdaterController(controller));

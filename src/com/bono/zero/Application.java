@@ -49,7 +49,10 @@ public class Application extends WindowAdapter {
     protected void start(JFrame frame) {
         ZeroFrame zeroFrame = (ZeroFrame) frame;
 
+        controller = new Controller();
+
         Directory directory = new Directory();
+        zeroFrame.getDirectoryPanel().addMouseAdapter(controller.getTreeMouseListener());
         zeroFrame.getDirectoryPanel().addTreeModel(directory.getModel());
 
         zeroFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
