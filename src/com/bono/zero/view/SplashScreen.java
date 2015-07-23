@@ -28,8 +28,10 @@ public class SplashScreen extends JDialog {
     }
 
     public static void close() {
-        splashScreen.setVisible(false);
-        splashScreen.dispose();
+        if (splashScreen != null) {
+            splashScreen.setVisible(false);
+            splashScreen.dispose();
+        }
     }
 
 }

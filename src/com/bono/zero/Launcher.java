@@ -16,6 +16,7 @@ import java.io.IOException;
 /**
  * Created by hennihardliver on 23/05/14.
  */
+@Deprecated
 public class Launcher {
 
     private static final String HOST_PREFIX = "host:";
@@ -60,19 +61,19 @@ public class Launcher {
         Controller controller = new Controller();
 
         // creating playlist model and setting the columns to be shown
-        Playlist playlist = new Playlist();
-        String[] columns = {"title", "album", "artist"};
-        playlist.showColumns(columns);
-        controller.addPlaylist(playlist);
+        Playlist playlist = new Playlist(); // application start
+        String[] columns = {"title", "album", "artist"};  // application start
+        playlist.showColumns(columns);  // application start
+        controller.addPlaylist(playlist);  // application start
 
-        ServerStatus serverStatus = new ServerStatus();
-        controller.addServerStatus(serverStatus);
+        ServerStatus serverStatus = new ServerStatus();  // application start
+        controller.addServerStatus(serverStatus);  // application start
 
-        controller.addServer(server);
+        controller.addServer(server);  // application start
 
-        controller.addDirectory(directory);
+        controller.addDirectory(directory);  // application start
 
-        controller.addSettings(settings);
+        controller.addSettings(settings);  // application start
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -83,14 +84,14 @@ public class Launcher {
 
         // create the playlist panel
         PlaylistPanel playlistPanel = new PlaylistPanel();  // done! in zeroframe
-        playlistPanel.addTableMouseListener(controller.getTableMouseListener());  // not this
-        playlistPanel.setTableModel(playlist);  // not this
-        playlist.addObserver("Playlist", playlistPanel);  // not this
-        serverStatus.addObserver("Song", playlistPanel);  // not this
+        playlistPanel.addTableMouseListener(controller.getTableMouseListener());  // application start
+        playlistPanel.setTableModel(playlist);  // // application start
+        playlist.addObserver("Playlist", playlistPanel);  // application start
+        serverStatus.addObserver("Song", playlistPanel);  // application start
         PlaylistPopup playlistPopup = new PlaylistPopup();  // done! in zeroframe
         //playlistPopup.addMenuItemListener("JMenuItem.remove", controller.getRemoveListener(playlistPanel.getSelectionModel()));
-        playlistPopup.addAllMenuItemListener(controller.getPopupListener(playlistPanel.getSelectionModel()));  // not this
-        playlistPanel.addPopupMenu(playlistPopup);
+        playlistPopup.addAllMenuItemListener(controller.getPopupListener(playlistPanel.getSelectionModel()));  // application start
+        playlistPanel.addPopupMenu(playlistPopup);  // done in zeroframe
 
         // creating a splitpane for the center view
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, directoryPanel, playlistPanel);  // done! in zeroframe
@@ -98,15 +99,15 @@ public class Launcher {
         splitPane.setDividerLocation((bounds.width/3));  // done! in zeroframe
 
         PlaybackControls playbackControls = new PlaybackControls();  // done! in zeroframe
-        playbackControls.addAllButtonActionListener(controller.getControlsHandler());  // not this
-        serverStatus.addObserver("State", playbackControls);  // not this
-        serverStatus.addObserver("Repeat", playbackControls);  // not this
-        serverStatus.addObserver("Random", playbackControls);  // not this
+        playbackControls.addAllButtonActionListener(controller.getControlsHandler());  // application start
+        serverStatus.addObserver("State", playbackControls);  // application start
+        serverStatus.addObserver("Repeat", playbackControls);  // application start
+        serverStatus.addObserver("Random", playbackControls);  // application start
 
         ZeroMenuBar zeroMenuBar = new ZeroMenuBar();  // done! in zeroframe
-        serverStatus.addObserver("Consume", zeroMenuBar);  // not this
-        serverStatus.addObserver("Single", zeroMenuBar);  // not this
-        zeroMenuBar.addCheckBoxListeners(controller.getConfigListener());  // not this
+        serverStatus.addObserver("Consume", zeroMenuBar);  // application start
+        serverStatus.addObserver("Single", zeroMenuBar);  // application start
+        zeroMenuBar.addCheckBoxListeners(controller.getConfigListener());  // application start
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -167,7 +168,7 @@ public class Launcher {
         } catch (IOException e) {
             // if there is no settings.set file
             settings = Settings.getSettings();
-            new SettingsDialog(settings);
+            //new SettingsDialog(settings);
             goWait();
             System.out.println("Continue, and go testing");
             testSettings(settings, server);
@@ -192,13 +193,13 @@ public class Launcher {
 
         } catch (IllegalArgumentException e) {
 
-            new SettingsDialog(settings);
+            //new SettingsDialog(settings);
             goWait();
             testSettings(settings, server);
 
         } catch (IOException e) {
 
-            new SettingsDialog(settings);
+            //new SettingsDialog(settings);
             goWait();
             testSettings(settings, server);
 

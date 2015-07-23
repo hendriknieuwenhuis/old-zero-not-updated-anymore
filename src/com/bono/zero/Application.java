@@ -2,10 +2,15 @@ package com.bono.zero;
 
 import com.bono.zero.control.Controller;
 import com.bono.zero.control.Server;
+import com.bono.zero.control.ServerMonitor;
+import com.bono.zero.control.UpdaterController;
 import com.bono.zero.laf.ZeroTheme;
 import com.bono.zero.model.Directory;
+import com.bono.zero.model.Playlist;
+import com.bono.zero.model.ServerStatus;
 import com.bono.zero.model.Settings;
-import com.bono.zero.view.ZeroFrame;
+import com.bono.zero.view.*;
+import com.bono.zero.view.SplashScreen;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -24,7 +29,7 @@ public class Application extends WindowAdapter {
 
     private static Application application;
 
-    private static Rectangle bounds;
+    private Rectangle bounds;
 
     private Server server;
     private Directory directory;
@@ -32,28 +37,75 @@ public class Application extends WindowAdapter {
     private Controller controller;
 
 
-
     public static void launch(final String[] args) {
         application = new Application();
 
         application.setLookAndFeel();
 
-        //application.init();
-
         application.screenSize();
 
-        application.start(new ZeroFrame(bounds));
+        application.init();
+
+        application.showSplashScreen();
+
+        application.start(new ZeroFrame(application.bounds));
     }
 
 
     protected void start(JFrame frame) {
         ZeroFrame zeroFrame = (ZeroFrame) frame;
 
+        // display the splash screen to indicate the application is starting
+        SplashScreen.getSplashScreen(bounds);
+
+        if (server == null) {
+            server = new Server();
+        }
+
         controller = new Controller();
 
         Directory directory = new Directory();
+
+        // creating playlist model and setting the columns to be shown
+        Playlist playlist = new Playlist();
+        String[] columns = {"title", "album", "artist"};
+        playlist.showColumns(columns);
+        controller.addPlaylist(playlist);
+
+        ServerStatus serverStatus = new ServerStatus();
+        controller.addServerStatus(serverStatus);
+
+        controller.addServer(server);
+
+        controller.addDirectory(directory);
+
+        controller.addSettings(settings);
+
         zeroFrame.getDirectoryPanel().addMouseAdapter(controller.getTreeMouseListener());
         zeroFrame.getDirectoryPanel().addTreeModel(directory.getModel());
+
+        zeroFrame.getPlaylistPanel().addTableMouseListener(controller.getTableMouseListener());
+        zeroFrame.getPlaylistPanel().setTableModel(playlist);
+        playlist.addObserver("Playlist", zeroFrame.getPlaylistPanel());
+        serverStatus.addObserver("Song", zeroFrame.getPlaylistPanel());
+
+        zeroFrame.getPlaylistPopup().addAllMenuItemListener(controller.getPopupListener(zeroFrame.getPlaylistPanel().getSelectionModel()));
+        //zeroFrame.getPlaylistPanel().addPopupMenu(playlistPopup);
+
+        zeroFrame.getPlaybackControls().addAllButtonActionListener(controller.getControlsHandler());
+        serverStatus.addObserver("State", zeroFrame.getPlaybackControls());
+        serverStatus.addObserver("Repeat", zeroFrame.getPlaybackControls());
+        serverStatus.addObserver("Random", zeroFrame.getPlaybackControls());
+
+
+        serverStatus.addObserver("Consume", zeroFrame.getZeroMenuBar());
+        serverStatus.addObserver("Single", zeroFrame.getZeroMenuBar());
+        zeroFrame.getZeroMenuBar().addCheckBoxListeners(controller.getConfigListener());
+
+        ServerMonitor serverMonitor = new ServerMonitor(new UpdaterController(controller));
+        controller.addServerMonitor(serverMonitor);
+
+        SplashScreen.close();
 
         zeroFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         zeroFrame.addWindowListener(this);
@@ -61,20 +113,26 @@ public class Application extends WindowAdapter {
         zeroFrame.setVisible(true);
     }
 
+
+    protected void showSplashScreen() {
+        SplashScreen.getSplashScreen(bounds);
+    }
+
+
     /*
     Load the settings of the client. When there are no
     settings to load from file initialize with default settings.
      */
     protected void init() {
+        Thread thread = new Thread(new SettingsInitializer(this));
+        thread.start();
         try {
-            settings = SettingsLoader.loadSettings();
-        } catch (ClassNotFoundException e) {
-            settings = Settings.getSettings();
-        } catch (IOException e) {
-
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
     }
+
 
     // Sets the look and feel
     protected void setLookAndFeel() {
@@ -110,6 +168,7 @@ public class Application extends WindowAdapter {
         UIManager.put("Table.background", gray);
         UIManager.put("MenuBar.gradient", buttonGradient);
     }
+
 
     protected Dimension screenSize() {
         bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -161,5 +220,17 @@ public class Application extends WindowAdapter {
     @Override
     public void windowDeactivated(WindowEvent e) {
         System.out.printf("%s: %s\n", getClass().getName(), "deactivated");
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public Settings getSettings() {
+        return settings;
     }
 }
