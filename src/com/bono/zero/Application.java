@@ -48,12 +48,12 @@ public class Application extends WindowAdapter {
 
         application.showSplashScreen();
 
-        application.start(new ZeroFrame(application.bounds));
+        application.start(new JFrame());
     }
 
 
     protected void start(JFrame frame) {
-        ZeroFrame zeroFrame = (ZeroFrame) frame;
+        ZeroFrame zeroFrame = new ZeroFrame(application.bounds, frame);
 
         System.out.printf("%s\n", settings.getHost());
 
@@ -109,10 +109,10 @@ public class Application extends WindowAdapter {
 
         SplashScreen.close();
 
-        zeroFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        zeroFrame.addWindowListener(this);
-        zeroFrame.setSize(screenSize());
-        zeroFrame.setVisible(true);
+        zeroFrame.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        zeroFrame.getFrame().addWindowListener(this);
+        zeroFrame.getFrame().setSize(screenSize());
+        zeroFrame.getFrame().setVisible(true);
     }
 
 
@@ -126,13 +126,14 @@ public class Application extends WindowAdapter {
     settings to load from file initialize with default settings.
      */
     protected void init() {
+        /*
         Thread thread = new Thread(new SettingsInitializer(this));
         thread.start();
         try {
             thread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -182,17 +183,24 @@ public class Application extends WindowAdapter {
         System.out.printf("%s: %s\n", getClass().getName(), "opened");
     }
 
-    @Override
-    public void windowClosing(WindowEvent e) {
-        System.out.printf("%s: %s\n", getClass().getName(), "closing");
-    }
-
     /*
     Save the settings of the client.
      */
     @Override
+    public void windowClosing(WindowEvent e) {
+        try {
+            SettingsLoader.saveSettings(settings);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        System.out.printf("%s: %s\n", getClass().getName(), "closing");
+    }
+
+
+    @Override
     public void windowClosed(WindowEvent e) {
-        System.out.printf("%s: %s\n", getClass().getName(), "closed" );
+        System.out.printf("%s: %s\n", getClass().getName(), "closed");
     }
 
     @Override

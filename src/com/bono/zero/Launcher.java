@@ -31,7 +31,7 @@ public class Launcher {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                launchApplication(args);
+                //launchApplication(args);
             }
         }).start();
 
@@ -45,6 +45,7 @@ public class Launcher {
      * main arguments are used and the contact to the server is initialized.
      * @param args
      */
+    /*
     public static void launchApplication(final String[] args) {
         // get the size of the desktop
         final Rectangle bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -129,8 +130,8 @@ public class Launcher {
 
         view.showFrame(new Dimension(bounds.width, bounds.height), true);
 
-    }
-
+    }*/
+    /*
     private static Settings initConnection(String[] args, Server server) {
         Settings settings = null;
         if (args != null) {
@@ -181,7 +182,7 @@ public class Launcher {
         }
 
         return settings;
-    }
+    }*/
 
     // test the settings that are given. When no connection
     // is established we will ask again for settings.

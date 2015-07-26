@@ -63,7 +63,7 @@ public class Main {
         Main.setLook();
 
 
-        Launcher.launchApplication(args);
+        //Launcher.launchApplication(args);
 
     }
 

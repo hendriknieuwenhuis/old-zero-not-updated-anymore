@@ -16,7 +16,7 @@ import com.bono.zero.Launcher;
 import com.bono.zero.SettingsInitializer;
 import com.bono.zero.model.Settings;
 
-public class SettingsDialog extends WindowAdapter {
+public class SettingsDialogView extends WindowAdapter {
 
 	private JDialog window;
 	
@@ -25,24 +25,16 @@ public class SettingsDialog extends WindowAdapter {
 	private JPasswordField passwordField;
 	private JTextField userField;
 	
-	private JButton button;	
-	
-	private Settings settings;
+	private JButton okButton;
 
-	private Rectangle bounds;
 
-	private SettingsInitializer settingsInitializer;
-
-    public SettingsDialog(SettingsInitializer settingsInitializer) {
+	public SettingsDialogView() {
 		super();
-		this.settingsInitializer = settingsInitializer;
-		settings = settingsInitializer.getSettings();
-		bounds = settingsInitializer.getBounds();
 		init();
 	}
-	
-	private void init() {
 
+
+	private void init() {
 		window = new JDialog();
 
 		JLabel hostLabel = new JLabel("host:");
@@ -59,10 +51,8 @@ public class SettingsDialog extends WindowAdapter {
 		passwordField = new JPasswordField();
 		userField = new JTextField();
 		
-		button = new JButton("OK");
-		button.addActionListener(new ButtonListener());
-		
-		
+		okButton = new JButton("OK");
+
 		window.setLayout(new GridLayout(5, 2));
 		window.add(hostLabel);
 		window.add(hostField);
@@ -72,12 +62,13 @@ public class SettingsDialog extends WindowAdapter {
 		window.add(passwordField);
 		window.add(userLabel);
 		window.add(userField);
-		window.add(button);
+		window.add(okButton);
 
 		window.setAlwaysOnTop(true);
 		window.pack();
+
+		Rectangle bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		window.setLocation((bounds.width / 2) - (window.getWidth() / 2), (bounds.height / 2) - (window.getHeight() / 2));
-		window.setVisible(true);
 
 		window.addWindowListener(this);
 	}
@@ -88,28 +79,28 @@ public class SettingsDialog extends WindowAdapter {
 		System.exit(0);
 	}
 
-
-	
-	private void closeDialog() {
-		window.dispose();
+	public JDialog getView() {
+		return window;
 	}
-	
-	private class ButtonListener implements ActionListener {
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			settings.setHost(hostField.getText());
-			if (!portField.getText().equals("")) {
-				settings.setPort(Integer.parseInt(portField.getText()));
-			}
-			settings.setPassword(passwordField.getPassword().toString());
-			settings.setUser(userField.getText());
+	public JTextField getHostField() {
+		return hostField;
+	}
 
-            settingsInitializer.doNotify();
+	public JTextField getPortField() {
+		return portField;
+	}
 
-			closeDialog();
-		}
-		
+	public JPasswordField getPasswordField() {
+		return passwordField;
+	}
+
+	public JTextField getUserField() {
+		return userField;
+	}
+
+	public JButton getOkButton() {
+		return okButton;
 	}
 
 }

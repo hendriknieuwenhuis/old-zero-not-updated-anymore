@@ -110,6 +110,12 @@ public class Endpoint {
         writer.flush();
     }
 
+    public String getVersion() throws IOException {
+        connect();
+        socket.close();
+        return version;
+    }
+
     public String getHost() {
         return host;
     }

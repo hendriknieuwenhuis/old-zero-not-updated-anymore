@@ -18,7 +18,7 @@ public class Settings implements Serializable {
 
 	private static Settings settings;
 
-	private Settings() {}
+	public Settings() {}
 	
 	// creates and gives back an instance of this class.
 	public static Settings getSettings() {
@@ -77,5 +77,16 @@ public class Settings implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "Settings{" +
+				"host='" + host + '\'' +
+				", port=" + port +
+				", user='" + user + '\'' +
+				", password='" + password + '\'' +
+				", address=" + address +
+				'}';
 	}
 }

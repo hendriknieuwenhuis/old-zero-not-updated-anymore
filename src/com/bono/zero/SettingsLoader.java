@@ -18,17 +18,24 @@ public class SettingsLoader {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public static Settings loadSettings() throws ClassNotFoundException, IOException {
+    public static Settings loadSettings() throws Exception {
         Settings settings;
+        FileInputStream file;
         try {
-            FileInputStream file = new FileInputStream("settings.set");
+            file = new FileInputStream("settings.set");
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("No file!");
+        }
+        try {
+
             ObjectInputStream objectIn = new ObjectInputStream(file);
             Object settingsFile = objectIn.readObject();
             settings = (Settings) settingsFile;
             objectIn.close();
 
+
         } catch (ClassNotFoundException c) {
-            throw new ClassNotFoundException("No file!");
+            throw new ClassNotFoundException();
         } catch (IOException e) {
             throw new IOException();
         }

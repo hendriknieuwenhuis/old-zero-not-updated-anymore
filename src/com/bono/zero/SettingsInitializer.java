@@ -1,101 +1,36 @@
 package com.bono.zero;
 
+import com.bono.zero.api.Endpoint;
 import com.bono.zero.control.Server;
+import com.bono.zero.control.SettingsDialog;
 import com.bono.zero.model.Settings;
-import com.bono.zero.view.SettingsDialog;
+import com.bono.zero.view.SettingsDialogView;
 
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
 
 /**
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * Change this class in a callable<Settings> class
- * so it returns the settings and doesn't need
- * dependencies on application!!!!!!!!!!!!!!!!!!!!
  *
  * Created by hendriknieuwenhuis on 23/07/15.
  */
-public class SettingsInitializer implements Runnable {
+public class SettingsInitializer implements Callable<Settings> {
 
     private Object lock = new Object();
     private boolean waiting;
 
-    private Server server;
     private Settings settings;
-    private Rectangle bounds;
 
-    private Application application;
+    private Endpoint endpoint;
 
-    public SettingsInitializer(Application application) {
-        this.application = application;
-        server = application.getServer();
-        settings = application.getSettings();
-        bounds = application.getBounds();
+    public SettingsInitializer(Endpoint endpoint, Settings settings) {
+        this.endpoint = endpoint;
+        this.settings = settings;
     }
 
-    /*
-    ----- !!!!!! WARNING !!!!! ------
-    Looks like incorrect settings are
-    passed along.
-
-    Could be caused by fault in the
-    server class.
-    ----- !!!!!!!!!!!!!!!!!!!! ------
-     */
-    @Override
-    public void run() {
-        if (server == null) {
-            server = new Server();
-        }
-        try {
-            // loading the settings from settings.set file.
-            settings = SettingsLoader.loadSettings();
-            testSettings();
-            //return settings;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            // if there is no settings.set file
-            settings = Settings.getSettings();
-            new SettingsDialog(this);
-            goWait();
-            System.out.println("Continue, and go testing");
-            testSettings();
-            try {
-                SettingsLoader.saveSettings(settings);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            application.setSettings(settings);
-        }
-
-        application.setSettings(settings);
-
-    }
-
-    // test the settings that are given. When no connection
-    // is established we will ask again for settings.
-    private void testSettings() {
-
-        try {
-            server.setAddress(settings.getAddress());
-            server.checkConnectionSettings();
-
-        } catch (IllegalArgumentException e) {
-
-            new SettingsDialog(this);
-            goWait();
-            testSettings();
-
-        } catch (IOException e) {
-
-            new SettingsDialog(this);
-            goWait();
-            testSettings();
-
-        }
-
-    }
 
     private void goWait() {
         synchronized (lock) {
@@ -112,8 +47,9 @@ public class SettingsInitializer implements Runnable {
     }
 
     public void doNotify() {
+        waiting = false;
         synchronized (lock) {
-            waiting = false;
+
             lock.notify();
         }
     }
@@ -122,7 +58,71 @@ public class SettingsInitializer implements Runnable {
         return settings;
     }
 
-    public Rectangle getBounds() {
-        return bounds;
+
+    @Override
+    public Settings call() throws Exception {
+
+        // check if endpoint is intialized
+        if (endpoint == null) {
+            endpoint = new Endpoint();
+        }
+
+        // try to load the settings.set file.
+        try {
+            settings = SettingsLoader.loadSettings();
+            testSettings();
+        } catch (FileNotFoundException e) {
+            // create new settings object
+            // and ask the user for the
+            // servers address, port, etc
+            // with the settings dialog view.
+            newSettings();
+        } finally {
+            return settings;
+        }
+
+    }
+
+
+    private void testSettings() {
+        endpoint.setHost(settings.getHost());
+        endpoint.setPort(settings.getPort());
+        String version = null;
+
+        // check if the version String is given
+        // to test the settings.
+        try {
+            version = endpoint.getVersion();
+            //System.out.println("Version: "+version);
+        } catch (IllegalArgumentException e) {
+            // call this method again!
+            System.out.println(e.toString());
+            newSettings();
+        } catch (ConnectException e) {
+            System.out.println(e.toString());
+            newSettings();
+        } catch (UnknownHostException e) {
+            System.out.println(e.toString());
+            newSettings();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+        }
+        // call again, version wrong!
+        if (!version.startsWith("OK MPD")) {
+            newSettings();
+        }
+        try {
+            SettingsLoader.saveSettings(settings);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void newSettings() {
+        settings = new Settings();
+        new SettingsDialog(this);
+        goWait();
+        testSettings();
     }
 }

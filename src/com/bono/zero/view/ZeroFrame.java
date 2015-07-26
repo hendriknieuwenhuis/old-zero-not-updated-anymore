@@ -8,13 +8,16 @@ import javax.swing.border.EmptyBorder;
 /**
  * <p>Title: ZeroFrame.java</p>
  *
- * <p>Description: Class ZeroFrame.java is the JFrame of the GUI that
- * holds the components of the GUI.
+ * <p>Description: Class ZeroFrame.java holds the JFrame of
+ * the GUI with the components of the GUI.
  * It is initialised with a JPanel with a BorderLayout and an
  * EmptyBorder set (5,5,5,5).
  * </p>
  */
-public class ZeroFrame extends JFrame {
+public class ZeroFrame {
+
+    // The JFrame holding the interface
+    private JFrame frame;
 
     // holds the components of the frame
     private JPanel mainPanel;
@@ -32,20 +35,10 @@ public class ZeroFrame extends JFrame {
     private ZeroMenuBar zeroMenuBar;
 
 
-    public ZeroFrame() {
-        super();
-        setTitle("Zero");
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(5,5,5,5));
-    }
-
-    public ZeroFrame(Rectangle bounds) {
-        super();
+    public ZeroFrame(Rectangle bounds, JFrame frame) {
         this.bounds = bounds;
-        setTitle("Zero");
+        this.frame = frame;
+        this.frame.setTitle("Zero");
         init();
     }
 
@@ -74,15 +67,15 @@ public class ZeroFrame extends JFrame {
 
         mainPanel.add(centerSplitPane, BorderLayout.CENTER);
         mainPanel.add(playbackControls, BorderLayout.NORTH);
-        getContentPane().add(mainPanel);
-        setJMenuBar(zeroMenuBar);
+        frame.getContentPane().add(mainPanel);
+        frame.setJMenuBar(zeroMenuBar);
     }
 
 
 
 
     public void addMenuBar(JMenuBar menuBar) {
-        setJMenuBar(menuBar);
+        frame.setJMenuBar(menuBar);
     }
 
     /**
@@ -101,9 +94,9 @@ public class ZeroFrame extends JFrame {
      * @param visible
      */
     public void showFrame(Dimension dimension, boolean visible) {
-        getContentPane().add(mainPanel);
-        setSize(dimension);
-        setVisible(visible);
+        frame.getContentPane().add(mainPanel);
+        frame.setSize(dimension);
+        frame.setVisible(visible);
     }
 
     public DirectoryPanel getDirectoryPanel() {
@@ -126,6 +119,8 @@ public class ZeroFrame extends JFrame {
         return zeroMenuBar;
     }
 
-
+    public JFrame getFrame() {
+        return frame;
+    }
 
 }
