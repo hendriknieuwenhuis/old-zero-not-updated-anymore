@@ -32,7 +32,7 @@ public class SettingsInitializer implements Callable<Settings> {
     }
 
 
-    private void goWait() {
+    private void pauseThread() {
         synchronized (lock) {
             try {
                 waiting = true;
@@ -46,7 +46,7 @@ public class SettingsInitializer implements Callable<Settings> {
 
     }
 
-    public void doNotify() {
+    public void continueThread() {
         waiting = false;
         synchronized (lock) {
 
@@ -122,7 +122,7 @@ public class SettingsInitializer implements Callable<Settings> {
     private void newSettings() {
         settings = new Settings();
         new SettingsDialog(this);
-        goWait();
+        pauseThread();
         testSettings();
     }
 }

@@ -24,6 +24,9 @@ public class SettingsDialog {
         view.getView().setVisible(true);
     }
 
+    /*
+    The Listener for the OK button in the SettingsDialogView.
+     */
     private class ButtonListener implements ActionListener {
 
         @Override
@@ -35,7 +38,7 @@ public class SettingsDialog {
             settingsInitializer.getSettings().setPassword(view.getPasswordField().getPassword().toString());
             settingsInitializer.getSettings().setUser(view.getUserField().getText());
 
-            settingsInitializer.doNotify();
+            settingsInitializer.continueThread();
 
             view.getView().dispose();
         }
