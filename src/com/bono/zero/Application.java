@@ -1,5 +1,6 @@
 package com.bono.zero;
 
+import com.bono.zero.api.Endpoint;
 import com.bono.zero.control.Controller;
 import com.bono.zero.control.Server;
 import com.bono.zero.control.ServerMonitor;
@@ -21,6 +22,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by hendriknieuwenhuis on 21/07/15.
@@ -35,6 +40,9 @@ public class Application extends WindowAdapter {
     private Directory directory;
     private Settings settings;
     private Controller controller;
+
+    private Endpoint endpoint;
+
 
 
     public static void launch(final String[] args) {
@@ -64,7 +72,7 @@ public class Application extends WindowAdapter {
             server = new Server();
         }
 
-        controller = new Controller();
+
 
         Directory directory = new Directory();
 
@@ -72,9 +80,13 @@ public class Application extends WindowAdapter {
         Playlist playlist = new Playlist();
         String[] columns = {"title", "album", "artist"};
         playlist.showColumns(columns);
-        controller.addPlaylist(playlist);
 
         ServerStatus serverStatus = new ServerStatus();
+
+        controller = new Controller();
+
+        controller.addPlaylist(playlist);
+
         controller.addServerStatus(serverStatus);
 
         controller.addServer(server);
@@ -123,17 +135,25 @@ public class Application extends WindowAdapter {
 
     /*
     Load the settings of the client. When there are no
-    settings to load from file initialize with default settings.
+    settings to load from file, initialize with user
+    given settings.
      */
     protected void init() {
-        /*
-        Thread thread = new Thread(new SettingsInitializer(this));
-        thread.start();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        Future<Settings> settingsFuture = executorService.submit(new SettingsInitializer(new Endpoint(), new Settings()));
+
+        settings = null;
         try {
-            thread.join();
+            settings = settingsFuture.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        executorService.shutdown();
+
     }
 
 
@@ -193,8 +213,6 @@ public class Application extends WindowAdapter {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
-        System.out.printf("%s: %s\n", getClass().getName(), "closing");
     }
 
 

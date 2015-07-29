@@ -16,7 +16,7 @@ import com.bono.zero.Launcher;
 import com.bono.zero.SettingsInitializer;
 import com.bono.zero.model.Settings;
 
-public class SettingsDialogView extends WindowAdapter {
+public class SettingsDialogView {
 
 	private JDialog window;
 	
@@ -70,14 +70,10 @@ public class SettingsDialogView extends WindowAdapter {
 		Rectangle bounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		window.setLocation((bounds.width / 2) - (window.getWidth() / 2), (bounds.height / 2) - (window.getHeight() / 2));
 
-		window.addWindowListener(this);
+
 	}
 
-	@Override
-	public void windowClosing(WindowEvent e) {
-		window.dispose();
-		System.exit(0);
-	}
+
 
 	public JDialog getView() {
 		return window;

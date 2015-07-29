@@ -19,6 +19,7 @@ public class ServerStatus extends Observable {
 	public static final String SONG            = "song";
 	public static final String SONG_ID         = "songid";
 	public static final String TIME            = "time";
+
 	public static final String BIT_RATE        = "bitrate";
 	public static final String AUDIO           = "audio";
 	public static final String NEXT_SONG       = "nextsong";
