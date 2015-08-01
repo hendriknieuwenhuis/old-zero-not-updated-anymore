@@ -34,6 +34,8 @@ public class ZeroFrame {
     private PlaylistPopup playlistPopup;
     private ZeroMenuBar zeroMenuBar;
 
+    private SongView songView;
+
 
     public ZeroFrame(Rectangle bounds, JFrame frame) {
         this.bounds = bounds;
@@ -63,10 +65,17 @@ public class ZeroFrame {
 
         playbackControls = new PlaybackControls();
 
+        // holdint he playback controls and the song info.
+        JPanel playerPanel = new JPanel();
+        playerPanel.setLayout(new FlowLayout());
+        songView = new SongView();
+        playerPanel.add(playbackControls);
+        playerPanel.add(songView.getSongView());
+
         zeroMenuBar = new ZeroMenuBar();
 
         mainPanel.add(centerSplitPane, BorderLayout.CENTER);
-        mainPanel.add(playbackControls, BorderLayout.NORTH);
+        mainPanel.add(playerPanel, BorderLayout.NORTH);
         frame.getContentPane().add(mainPanel);
         frame.setJMenuBar(zeroMenuBar);
     }

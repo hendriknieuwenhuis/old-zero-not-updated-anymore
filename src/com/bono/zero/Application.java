@@ -52,7 +52,7 @@ public class Application extends WindowAdapter {
 
         application.screenSize();
 
-        application.init();
+        //application.init();
 
         application.showSplashScreen();
 
@@ -63,7 +63,7 @@ public class Application extends WindowAdapter {
     protected void start(JFrame frame) {
         ZeroFrame zeroFrame = new ZeroFrame(application.bounds, frame);
 
-        System.out.printf("%s\n", settings.getHost());
+        //System.out.printf("%s\n", settings.getHost());
 
         // display the splash screen to indicate the application is starting
         SplashScreen.getSplashScreen(bounds);

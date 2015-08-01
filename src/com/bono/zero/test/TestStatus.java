@@ -3,9 +3,12 @@ package com.bono.zero.test;
 import com.bono.zero.api.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
-import com.bono.zero.api.Status;
+import com.bono.zero.api.models.ServerProperty;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
@@ -17,38 +20,31 @@ public class TestStatus {
 
     public static void main(String[] args) {
         endpoint = new Endpoint();
-        endpoint.setHost("192.168.2.7");
+        endpoint.setHost("192.168.2.2");
         endpoint.setPort(6600);
         serverStatus = new ServerStatus();
 
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    serverStatus.setStatus(endpoint.request(new Command("status")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        t1.start();
+        List<String> query = null;
         try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
+            query = endpoint.request(new Command("status"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Thread t2 = new Thread(new Runnable() {
+        serverStatus.getStatus().getState().setChangeListener(new ChangeListener() {
             @Override
-            public void run() {
-                System.out.println(serverStatus.getStatus().toString());
+            public void stateChanged(ChangeEvent e) {
+                ServerProperty serverProperty = (ServerProperty) e.getSource();
+                System.out.printf("%s: %s\n", getClass().getName(), serverProperty.toString());
+
             }
+
+
+
         });
 
+        serverStatus.setStatus(query);
 
 
-        t2.start();
 
 
     }

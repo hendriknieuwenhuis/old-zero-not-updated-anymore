@@ -6,6 +6,8 @@ import java.io.IOException;
 
 /**
  * Created by hendriknieuwenhuis on 24/07/15.
+ *
+ * Controller for the player of the mpd server.
  */
 public class Player {
 

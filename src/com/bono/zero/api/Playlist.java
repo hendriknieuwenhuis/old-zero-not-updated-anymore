@@ -1,6 +1,8 @@
 package com.bono.zero.api;
 
-import java.util.ArrayList;
+import com.bono.zero.api.models.Song;
+
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
  */
 public class Playlist {
 
-    private static  final String FILE = "file:";
+    private static final String FILE = "file:";
     private static final String LAST_MODIFIED = "Last-Modified:";
     private static final String TITLE = "Title:";
     private static final String ALBUM = "Album:";
@@ -21,7 +23,7 @@ public class Playlist {
     private static final String POS = "Pos:";
     private static final String ID = "Id:";
 
-    private List<Song> playlist;
+    private HashMap<String, Song> playlist;
 
     /*
     Creates a new ArrayList called playlist holding
@@ -29,9 +31,10 @@ public class Playlist {
     in the playlist.
      */
     public void populatePlaylist(List<String> entry) {
-        playlist = new ArrayList<>();
+        playlist = new HashMap<>();
         Song song = null;
         for (String line : entry) {
+            System.out.println(line);
             if (line.startsWith(FILE)) {
                 song = new Song();
                 song.setFile(line.substring((FILE.length() + 1)));
@@ -57,12 +60,12 @@ public class Playlist {
                 song.setPos(line.substring((POS.length() + 1)));
             } else if (line.startsWith(ID)) {
                 song.setId(line.substring((ID.length() + 1)));
-                playlist.add(song);
+                playlist.put(song.getId(), song);
             }
         }
     }
 
-    public List<Song> getPlaylist() {
+    public HashMap<String, Song> getPlaylist() {
         return playlist;
     }
 }

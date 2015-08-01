@@ -4,7 +4,6 @@ import com.bono.zero.ServerProperties;
 import com.bono.zero.api.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
-import com.bono.zero.api.Song;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,9 +26,9 @@ public class TestPlaylist {
         Playlist playlist = new Playlist();
         playlist.populatePlaylist(request);
 
-        for (Song song : playlist.getPlaylist()) {
-                System.out.println(song.toString());
-        }
+        //for (Song song : playlist.getPlaylist()) {
+        //        System.out.println(song.toString());
+        //}
 
     }
 }

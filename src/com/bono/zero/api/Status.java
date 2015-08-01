@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
  */
+@Deprecated
 public class Status {
 
 

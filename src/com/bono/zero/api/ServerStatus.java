@@ -1,6 +1,7 @@
 package com.bono.zero.api;
 
 import java.util.List;
+import com.bono.zero.api.models.Status;
 
 /**
  * Created by hendriknieuwenhuis on 28/07/15.
@@ -52,35 +53,58 @@ public class ServerStatus {
     public void setStatus(List<String> entry) {
         synchronized (lock) {
             for (String line : entry) {
-                System.out.println(line);
-                if (line.startsWith(VOLUME)) status.setVolume(line.substring((VOLUME.length() + 1)));
-                else if (line.startsWith(REPEAT)) status.setRepeat(line.substring((REPEAT.length() + 1)));
-                else if (line.startsWith(RANDOM)) status.setRandom(line.substring((RANDOM.length() + 1)));
-                else if (line.startsWith(SINGLE)) status.setSingle(line.substring((SINGLE.length() + 1)));
-                else if (line.startsWith(CONSUME)) status.setConsume(line.substring((CONSUME.length() + 1)));
-                else if (line.startsWith(PLAYLIST)) status.setPlaylist(line.substring((PLAYLIST.length() + 1)));
-                else if (line.startsWith(PLAYLISTLENGTH))
-                    status.setPlaylistlength(line.substring((PLAYLISTLENGTH.length() + 1)));
-                else if (line.startsWith(STATE)) status.setState(line.substring((STATE.length() + 1)));
-                else if (line.startsWith(SONG)) status.setSong(line.substring((SONG.length() + 1)));
-                else if (line.startsWith(SONGID)) status.setSongid(line.substring((SONGID.length() + 1)));
-                else if (line.startsWith(NEXTSONG)) status.setNextsong(line.substring((NEXTSONG.length() + 1)));
-                else if (line.startsWith(NEXTSONGID)) status.setNextsongid(line.substring((NEXTSONGID.length() + 1)));
-                else if (line.startsWith(TIME)) status.setTime(line.substring((TIME.length() + 1)));
-                else if (line.startsWith(ELAPSED)) status.setElapsed(line.substring((ELAPSED.length() + 1)));
-                else if (line.startsWith(DURATION)) status.setDuration(line.substring((DURATION.length() + 1)));
-                else if (line.startsWith(BITRATE)) status.setBitrate(line.substring((BITRATE.length() + 1)));
-                else if (line.startsWith(XFADE)) status.setXfade(line.substring((XFADE.length() + 1)));
-                else if (line.startsWith(MIXRAMPDB)) status.setMixrampdb(line.substring((MIXRAMPDB.length() + 1)));
-                else if (line.startsWith(MIXRAMPDELAY)) status.setMixrampdelay(line.substring((MIXRAMPDELAY.length() + 1)));
-                else if (line.startsWith(AUDIO)) status.setAudio(line.substring((AUDIO.length() + 1)));
-                else if (line.startsWith(UPDATING)) status.setUpdating(line.substring((UPDATING.length() + 1)));
-                else if (line.startsWith(ERROR)) status.setError(line.substring((ERROR.length() + 1)));
+                //System.out.println(line);
+                if (line.startsWith(VOLUME)) {
+                    status.getVolume().setValue(line.substring((VOLUME.length() + 1)));
+                } else if (line.startsWith(REPEAT)) {
+                    status.getRepeat().setValue(line.substring((REPEAT.length() + 1)));
+                } else if (line.startsWith(RANDOM)) {
+                    status.getRandom().setValue(line.substring((RANDOM.length() + 1)));
+                } else if (line.startsWith(SINGLE)) {
+                    status.getSingle().setValue(line.substring((SINGLE.length() + 1)));
+                } else if (line.startsWith(CONSUME)) {
+                    status.getConsume().setValue(line.substring((CONSUME.length() + 1)));
+                } else if (line.startsWith(PLAYLIST)) {
+                    status.getPlaylist().setValue(line.substring((PLAYLIST.length() + 1)));
+                } else if (line.startsWith(PLAYLISTLENGTH)) {
+                    status.getPlaylistlength().setValue(line.substring((PLAYLISTLENGTH.length() + 1)));
+                } else if (line.startsWith(STATE)) {
+                    status.getState().setValue(line.substring((STATE.length() + 1)));
+                } else if (line.startsWith(SONG)) {
+                    status.getSong().setValue(line.substring((SONG.length() + 1)));
+                } else if (line.startsWith(SONGID)) {
+                    status.getSongid().setValue(line.substring((SONGID.length() + 1)));
+                } else if (line.startsWith(NEXTSONG)) {
+                    status.getNextsong().setValue(line.substring((NEXTSONG.length() + 1)));
+                } else if (line.startsWith(NEXTSONGID)) {
+                    status.getNextsongid().setValue(line.substring((NEXTSONGID.length() + 1)));
+                } else if (line.startsWith(TIME)) {
+                    status.getTime().setValue(line.substring((TIME.length() + 1)));
+                } else if (line.startsWith(ELAPSED)) {
+                    status.getElapsed().setValue(line.substring((ELAPSED.length() + 1)));
+                } else if (line.startsWith(DURATION)) {
+                    status.getDuration().setValue(line.substring((DURATION.length() + 1)));
+                } else if (line.startsWith(BITRATE)) {
+                    status.getBitrate().setValue(line.substring((BITRATE.length() + 1)));
+                } else if (line.startsWith(XFADE)) {
+                    status.getXfade().setValue(line.substring((XFADE.length() + 1)));
+                } else if (line.startsWith(MIXRAMPDB)) {
+                    status.getMixrampdb().setValue(line.substring((MIXRAMPDB.length() + 1)));
+                } else if (line.startsWith(MIXRAMPDELAY)) {
+                    status.getMixrampdelay().setValue(line.substring((MIXRAMPDELAY.length() + 1)));
+                } else if (line.startsWith(AUDIO)) {
+                    status.getAudio().setValue(line.substring((AUDIO.length() + 1)));
+                } else if (line.startsWith(UPDATING)) {
+                    status.getUpdating().setValue(line.substring((UPDATING.length() + 1)));
+                } else if (line.startsWith(ERROR)) {
+                    status.getError().setValue(line.substring((ERROR.length() + 1)));
+                } else {
                     // if a line is not a variable.
-                else System.out.println(line);
+                    System.out.println(line);
+                }
             }
         }
-        System.out.printf("%s: %s\n", Thread.currentThread().getName(), "update");
+        //System.out.printf("%s: %s\n", getClass().getName(), "update");
 
     }
 
