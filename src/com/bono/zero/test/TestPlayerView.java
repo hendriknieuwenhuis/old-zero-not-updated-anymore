@@ -138,40 +138,34 @@ public class TestPlayerView {
 
             switch (action) {
                 case PREVIOUS:
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                endpoint.command(new Command(PlayerProperties.PREVIOUS));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                    Runnable previous = () -> {
+                        try {
+                            endpoint.command(new Command(PlayerProperties.PREVIOUS));
+                        } catch (IOException io) {
+                            io.printStackTrace();
                         }
-                    }).start();
+                    };
+                    new Thread(previous).start();
                     break;
                 case PLAY:
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                endpoint.command(new Command(PlayerProperties.PLAY));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                    Runnable play = () -> {
+                        try {
+                            endpoint.command(new Command(PlayerProperties.PLAY));
+                        } catch (IOException io) {
+                            io.printStackTrace();
                         }
-                    }).start();
+                    };
+                    new Thread(play).start();
                     break;
                 case NEXT:
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                endpoint.command(new Command(PlayerProperties.NEXT));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                    Runnable next = () -> {
+                        try {
+                            endpoint.command(new Command(PlayerProperties.NEXT));
+                        } catch (IOException io) {
+                            io.printStackTrace();
                         }
-                    }).start();
+                    };
+                    new Thread(next).start();
                     break;
                 default:
                     break;
