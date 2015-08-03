@@ -72,7 +72,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        Application.launch(args);
+        ZeroApplication.launch(args);
         //new Main().launch(args);
     }
 }

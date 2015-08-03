@@ -50,4 +50,8 @@ public class Player {
     public String seekcur(String time) throws IOException {
         return endpoint.command(new Command(PlayerProperties.SEEKCUR, time));
     }
+
+    public String stop() throws IOException {
+        return endpoint.command(new Command(PlayerProperties.STOP));
+    }
 }

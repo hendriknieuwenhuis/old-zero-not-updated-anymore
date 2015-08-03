@@ -116,6 +116,10 @@ public class Endpoint {
         return version;
     }
 
+    public void close() throws IOException {
+        socket.close();
+    }
+
     public String getHost() {
         return host;
     }

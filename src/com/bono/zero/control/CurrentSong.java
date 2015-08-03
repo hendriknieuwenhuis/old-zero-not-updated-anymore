@@ -36,7 +36,7 @@ public class CurrentSong {
         return view;
     }
 
-    public ChangeListener getListener() {
+    public ChangeListener getCurrentSongListener() {
         return new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {

@@ -2,6 +2,8 @@ package com.bono.zero.api.models;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by hendriknieuwenhuis on 30/07/15.
@@ -11,9 +13,9 @@ public class ServerProperty {
     // the value of this property.
     private Object value;
 
-    // the listener to this property.
+    // the listeners to this property.
     //private Listener listener;
-    private ChangeListener changeListener;
+    private List<ChangeListener> changeListeners;
 
     public ServerProperty() {}
 
@@ -28,18 +30,27 @@ public class ServerProperty {
         if (!value.equals(this.value)) {
             this.value = value;
 
-            if (changeListener != null) {
-                changeListener.stateChanged(new ChangeEvent(this));
+            invokeListeners();
+        }
+    }
+
+    private void invokeListeners() {
+        if (changeListeners != null) {
+            for (ChangeListener listener : changeListeners) {
+                listener.stateChanged(new ChangeEvent(this));
             }
         }
     }
 
-    public ChangeListener getChangeListener() {
-        return changeListener;
+    public List<ChangeListener> getChangeListener() {
+        return changeListeners;
     }
 
     public void setChangeListener(ChangeListener changeListener) {
-        this.changeListener = changeListener;
+        if (changeListeners == null) {
+            changeListeners = new ArrayList<>();
+        }
+        changeListeners.add(changeListener);
     }
 
     @Override

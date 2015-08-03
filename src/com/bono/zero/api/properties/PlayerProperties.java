@@ -13,5 +13,6 @@ public class PlayerProperties {
     public static final String SEEK = "seek";
     public static final String SEEKID = "seekid";
     public static final String SEEKCUR = "seekcur";
+    public static final String STOP = "stop";
 
 }

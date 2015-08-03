@@ -1,7 +1,7 @@
 package com.bono.zero.util;
 
 
-
+@Deprecated
 public interface ObservableInterface {
 
 	void addObserver(String key, Observer observer);

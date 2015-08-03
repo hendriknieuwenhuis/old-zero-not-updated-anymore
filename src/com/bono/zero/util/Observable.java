@@ -3,6 +3,7 @@ package com.bono.zero.util;
 import java.util.HashMap;
 import com.bono.zero.util.Observer;
 
+@Deprecated
 public abstract class Observable implements ObservableInterface {
 	
 	protected HashMap<String, Observer> observers;
