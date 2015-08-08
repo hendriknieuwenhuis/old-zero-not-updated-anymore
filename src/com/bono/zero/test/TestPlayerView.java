@@ -6,8 +6,10 @@ import com.bono.zero.api.properties.PlayerProperties;
 import com.bono.zero.api.properties.StatusProperties;
 import com.bono.zero.control.CurrentSong;
 import com.bono.zero.control.PlayerControl;
+import com.bono.zero.control.SongScroller;
 import com.bono.zero.laf.BonoIconFactory;
 import com.bono.zero.view.PlayerView;
+import com.bono.zero.view.ScrollView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,9 +35,8 @@ public class TestPlayerView {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // endpoint to server for gettinng the init status and playlist.
+        // endpoint to server for getting the init status and playlist.
         Endpoint endpoint = new Endpoint(HOST, PORT);
-
 
         // status of server.
         serverStatus = new ServerStatus();
@@ -53,6 +54,46 @@ public class TestPlayerView {
         // the current song view/controller.
         currentSong = new CurrentSong(playlist);
 
+        // JPanel to containing
+        // the elements of the player.
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        //constraints.fill = GridBagConstraints.HORIZONTAL;
+        //constraints.gridwidth = 3;
+
+        // the player
+        Player playerPlayer = new Player(new Endpoint(HOST, PORT));
+        // the player view/controller.
+        PlayerControl playerControl = new PlayerControl(playerPlayer);
+        //constraints.weightx = 0.5;
+        constraints.gridx = 0;
+
+        // build interface.
+        panel.add(playerControl.getView(), constraints);
+
+        constraints.weightx = 0.5;
+        constraints.gridx = 1;
+
+        panel.add(currentSong.getView(), constraints);
+
+        Player playerScroller = new Player(new Endpoint(HOST, PORT));
+        SongScroller songScroller = new SongScroller(playerScroller);
+
+        constraints.weightx = 0.5;
+        constraints.gridx = 2;
+
+        panel.add(songScroller.getView(), constraints);
+        //panel.add(playerControl.getPlayerPanel());
+        //panel.add(currentSong.getView().getSongView());
+
+        // set status listeners.
+        serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
+        serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
+        serverStatus.getStatus().getSongid().setChangeListener(songScroller.getCurrentSongListener());
+        serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
+        serverStatus.getStatus().getState().setChangeListener(songScroller.getStateListener());
+
         // init status.
         List<String> statusList = null;
         try {
@@ -60,9 +101,6 @@ public class TestPlayerView {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // set status listeners.
-        serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
 
         // set status values.
         serverStatus.setStatus(statusList);
@@ -72,29 +110,12 @@ public class TestPlayerView {
         Thread thread = new Thread(idle);
         thread.start();
 
-        // JPanel to containing
-        // the elements of the player.
-        // JPanel panel = new JPanel();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setResizeWeight(0.5);
-        splitPane.setEnabled(false);
-        splitPane.setDividerSize(0);
-        // the player view/controller.
-        PlayerControl playerControl = new PlayerControl(HOST, PORT);
 
-        // build interface.
-        splitPane.add(playerControl.getPlayerPanel());
-        splitPane.add(currentSong.getView().getSongView());
-        //panel.add(playerControl.getPlayerPanel());
-        //panel.add(currentSong.getView().getSongView());
-        frame.getContentPane().add(splitPane);
+        frame.getContentPane().add(panel);
         frame.setSize(800, 200);
         frame.setVisible(true);
 
     }
-
-
-
 
     /*
     Een runnable idle die status update triggert!
@@ -138,7 +159,7 @@ public class TestPlayerView {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.printf("%s, active: %s, %s\n", Thread.currentThread().getName(), Thread.activeCount(), getClass().getName());
+                    System.out.printf("%s, active: %s\n", Thread.currentThread().getName() + " update server status", Thread.activeCount());
                     List<String> statusList = null;
                     try {
                         statusList = endpointUpdate.request(new Command(StatusProperties.STATUS));

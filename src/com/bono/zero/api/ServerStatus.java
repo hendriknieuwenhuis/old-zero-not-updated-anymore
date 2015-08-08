@@ -51,7 +51,7 @@ public class ServerStatus {
     Set the status directly from queried list.
      */
     public void setStatus(List<String> entry) {
-        synchronized (lock) {
+        //synchronized (lock) {
             for (String line : entry) {
                 //System.out.println(line);
                 if (line.startsWith(VOLUME)) {
@@ -103,15 +103,15 @@ public class ServerStatus {
                     System.out.println(line);
                 }
             }
-        }
+        //}
         //System.out.printf("%s: %s\n", getClass().getName(), "update");
 
     }
 
     public Status getStatus() {
-        synchronized (lock) {
+        //synchronized (lock) {
             return  status;
-        }
+        //}
     }
 
 

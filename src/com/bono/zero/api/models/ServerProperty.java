@@ -21,17 +21,23 @@ public class ServerProperty {
 
     public Object getValue() {
         return value;
+
     }
 
     // when value is changed its set and
     // the listener is called.
     public void setValue(Object value) {
 
-        if (!value.equals(this.value)) {
-            this.value = value;
+        // listener must always be invoked
+        // when value is set!!!!!!!!!!!!!
+        //
+        // In the object that reads the value
+        // it can judged on being changed!
+        //
+        this.value = value;
+        invokeListeners();
 
-            invokeListeners();
-        }
+
     }
 
     private void invokeListeners() {

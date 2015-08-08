@@ -21,8 +21,8 @@ public class Player {
         return endpoint.command(new Command(PlayerProperties.NEXT));
     }
 
-    public String pause() throws IOException {
-        return endpoint.command(new Command(PlayerProperties.PAUSE));
+    public String pause(String pause) throws IOException {
+        return endpoint.command(new Command(PlayerProperties.PAUSE, pause));
     }
 
     public String play() throws IOException {

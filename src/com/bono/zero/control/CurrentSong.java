@@ -4,6 +4,7 @@ import com.bono.zero.api.Playlist;
 import com.bono.zero.api.models.ServerProperty;
 import com.bono.zero.view.SongView;
 
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -32,8 +33,8 @@ public class CurrentSong {
         return playlist.getPlaylist().get(id).getTitle();
     }
 
-    public SongView getView() {
-        return view;
+    public JPanel getView() {
+        return view.getSongView();
     }
 
     public ChangeListener getCurrentSongListener() {

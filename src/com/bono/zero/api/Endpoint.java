@@ -83,6 +83,10 @@ public class Endpoint {
             writer(command.getCommand());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((line = reader.readLine()) != null) {
+
+                // print.
+                System.out.printf("%s: %s\n", getClass().getName(), line);
+
                 if (line.equals("OK") || line.startsWith("ACK")) {
                     break;
                 }
