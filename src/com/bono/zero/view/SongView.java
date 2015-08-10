@@ -7,10 +7,7 @@ import javax.swing.*;
  *
  * View displaying the current song.
  */
-public class SongView {
-
-    // JPanel holding all the components.
-    private JPanel mainPanel;
+public class SongView extends JPanel {
 
     // JLabel for the artist.
     private JLabel artist;
@@ -19,25 +16,27 @@ public class SongView {
     private JLabel song;
 
     public SongView() {
+        super();
         init();
     }
 
     // creates the view
     private void init() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         artist = new JLabel();
-        mainPanel.add(artist);
+        add(artist);
         song = new JLabel();
-        mainPanel.add(song);
+        add(song);
     }
+
 
     /*
     Returning the Jpanel containig the components
     that make up this view.
      */
     public JPanel getSongView() {
-        return mainPanel;
+        return this;
     }
 
     public JLabel getArtist() {

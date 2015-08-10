@@ -28,7 +28,7 @@ public class TestPlayerView {
 
 
     private static Playlist playlist;
-    private static CurrentSong currentSong;
+    //private static CurrentSong currentSong;
     private static ServerStatus serverStatus;
 
     public static void main(String[] args) {
@@ -52,40 +52,15 @@ public class TestPlayerView {
         playlist.populatePlaylist(request);
 
         // the current song view/controller.
-        currentSong = new CurrentSong(playlist);
-
-        // JPanel to containing
-        // the elements of the player.
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        //constraints.fill = GridBagConstraints.HORIZONTAL;
-        //constraints.gridwidth = 3;
+        CurrentSong currentSong = new CurrentSong(playlist);
 
         // the player
         Player playerPlayer = new Player(new Endpoint(HOST, PORT));
         // the player view/controller.
         PlayerControl playerControl = new PlayerControl(playerPlayer);
-        //constraints.weightx = 0.5;
-        constraints.gridx = 0;
-
-        // build interface.
-        panel.add(playerControl.getView(), constraints);
-
-        constraints.weightx = 0.5;
-        constraints.gridx = 1;
-
-        panel.add(currentSong.getView(), constraints);
 
         Player playerScroller = new Player(new Endpoint(HOST, PORT));
         SongScroller songScroller = new SongScroller(playerScroller);
-
-        constraints.weightx = 0.5;
-        constraints.gridx = 2;
-
-        panel.add(songScroller.getView(), constraints);
-        //panel.add(playerControl.getPlayerPanel());
-        //panel.add(currentSong.getView().getSongView());
 
         // set status listeners.
         serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
@@ -110,10 +85,43 @@ public class TestPlayerView {
         Thread thread = new Thread(idle);
         thread.start();
 
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // JPanel to containing
+                // the elements of the player.
+                JPanel panel = new JPanel();
+                panel.setLayout(new GridBagLayout());
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
 
-        frame.getContentPane().add(panel);
-        frame.setSize(800, 200);
-        frame.setVisible(true);
+                // build interface.
+                panel.add(playerControl.getView(), constraints);
+
+                constraints.weightx = 0.5;
+                constraints.gridx = 1;
+
+                panel.add(currentSong.getView(), constraints);
+
+                constraints.weightx = 0.5;
+                constraints.gridx = 2;
+
+                panel.add(songScroller.getView(), constraints);
+                //panel.add(playerControl.getPlayerPanel());
+                //panel.add(currentSong.getView().getSongView());
+
+
+                frame.getContentPane().add(panel);
+                frame.setSize(800, 200);
+                frame.setVisible(true);
+            }
+        });
+
+
+
+
+
+
 
     }
 

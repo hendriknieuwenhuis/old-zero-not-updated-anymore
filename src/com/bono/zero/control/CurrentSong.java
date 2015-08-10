@@ -20,8 +20,12 @@ public class CurrentSong {
     private Playlist playlist;
 
     public CurrentSong(Playlist playlist) {
-        view = new SongView();
+        //view = new SongView();
         this.playlist = playlist;
+    }
+
+    public void  setView(SongView songView) {
+        view = songView;
     }
 
 
@@ -43,8 +47,17 @@ public class CurrentSong {
             public void stateChanged(ChangeEvent e) {
                 ServerProperty serverProperty = (ServerProperty) e.getSource();
                 String songid = (String) serverProperty.getValue();
-                view.getArtist().setText("Artist: " + playlist.getPlaylist().get(songid).getArtist());
-                view.getSong().setText("Song: " + playlist.getPlaylist().get(songid).getTitle());
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
+
+                        view.getArtist().setText("Artist: " + playlist.getPlaylist().get(songid).getArtist());
+                        view.getSong().setText("Song: " + playlist.getPlaylist().get(songid).getTitle());
+                    }
+                });
+
             }
         };
 

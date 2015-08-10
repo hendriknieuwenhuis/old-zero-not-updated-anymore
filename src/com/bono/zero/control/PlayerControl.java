@@ -17,10 +17,19 @@ import java.io.IOException;
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
  */
-public class PlayerControl implements ActionListener {
+public class PlayerControl  {
 
-    private PlayerView playerView = new PlayerView();
+    /*
+    the panel containing the graphical
+    representation of this class.
+     */
+    private PlayerView playerView;
 
+    /*
+    Player controller sending the various
+    command to control the player of the
+    server to the server.
+     */
     private Player player;
 
     /*
@@ -30,109 +39,119 @@ public class PlayerControl implements ActionListener {
      */
     private String state;
 
+    // listener for the buttons in gui.
+    private ActionListener buttonsListener = new ButtonsListener();
 
+    // change listener for the 'state' property
+    // of the server status.
+    private ChangeListener stateListener = new StateListener();
 
-    private Endpoint endpointPlayer;
+    public PlayerControl() {}
 
     public PlayerControl(Player player) {
         this.player = player;
-        init();
+
     }
 
-    public PlayerControl(String host, int port) {
-        endpointPlayer = new Endpoint(host, port);
-        player = new Player(endpointPlayer);
-        init();
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
-    private void init() {
-        playerView.getButton(PlayerView.PREVIOUS).addActionListener(this);
-        playerView.getButton(PlayerView.STOP).addActionListener(this);
-        playerView.getButton(PlayerView.PLAY).addActionListener(this);
-        playerView.getButton(PlayerView.NEXT).addActionListener(this);
+
+    public void setPlayerView(PlayerView playerView) {
+        this.playerView = playerView;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        JButton model = (JButton) e.getSource();
-        String action = model.getActionCommand();
+    public ActionListener getButtonsListener() {
+        return buttonsListener;
+    }
 
-        switch (action) {
-            case PlayerView.PREVIOUS:
-                System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PREVIOUS");
-                Runnable previous = () -> {
-                    try {
-                        player.previous();
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
-                };
-                new Thread(previous).start();
-                break;
-            case PlayerView.STOP:
-                System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_STOP");
-                Runnable stop = () -> {
-                    try {
-                        player.stop();
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
-                };
-                new Thread(stop).start();
-                break;
-            case PlayerView.PLAY:
-                System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PLAY");
-                Runnable play = () -> {
-                    try {
-                        // when state is 'play' the
-                        // 'pause {1}' command is given,
-                        // to pause the player.
-                        if (state.equals(PlayerProperties.PLAY)) {
-                            player.pause("1");
+    private class ButtonsListener implements ActionListener {
 
-                        // when state is 'pause' the
-                        // 'pause {0}' command is given,
-                        // to resume the player.
-                        } else if (state.equals(PlayerProperties.PAUSE)) {
-                            player.pause("0");
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton model = (JButton) e.getSource();
+            String action = model.getActionCommand();
 
-                        // when state is 'stop' the
-                        // 'play' command is given,
-                        // to play the player.
-                        // the player starts playing
-                        // from the beginning of the
-                        // first song of the playlist.
-                        } else if (state.equals(PlayerProperties.STOP)) {
-                            player.play();
+            switch (action) {
+                case PlayerView.PREVIOUS:
+                    System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PREVIOUS");
+                    Runnable previous = () -> {
+                        try {
+                            player.previous();
+                        } catch (IOException io) {
+                            io.printStackTrace();
                         }
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
-                };
-                new Thread(play).start();
-                break;
-            case PlayerView.NEXT:
-                System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_NEXT");
-                Runnable next = () -> {
-                    try {
-                        player.next();
-                    } catch (IOException io) {
-                        io.printStackTrace();
-                    }
-                };
-                new Thread(next).start();
-                break;
-            default:
-                break;
+                    };
+                    new Thread(previous).start();
+                    break;
+                case PlayerView.STOP:
+                    System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_STOP");
+                    Runnable stop = () -> {
+                        try {
+                            player.stop();
+                        } catch (IOException io) {
+                            io.printStackTrace();
+                        }
+                    };
+                    new Thread(stop).start();
+                    break;
+                case PlayerView.PLAY:
+                    System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PLAY");
+                    Runnable play = () -> {
+                        try {
+                            // when state is 'play' the
+                            // 'pause {1}' command is given,
+                            // to pause the player.
+                            if (state.equals(PlayerProperties.PLAY)) {
+                                player.pause("1");
+
+                                // when state is 'pause' the
+                                // 'pause {0}' command is given,
+                                // to resume the player.
+                            } else if (state.equals(PlayerProperties.PAUSE)) {
+                                player.pause("0");
+
+                                // when state is 'stop' the
+                                // 'play' command is given,
+                                // to play the player.
+                                // the player starts playing
+                                // from the beginning of the
+                                // first song of the playlist.
+                            } else if (state.equals(PlayerProperties.STOP)) {
+                                player.play();
+                            }
+                        } catch (IOException io) {
+                            io.printStackTrace();
+                        }
+                    };
+                    new Thread(play).start();
+                    break;
+                case PlayerView.NEXT:
+                    System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_NEXT");
+                    Runnable next = () -> {
+                        try {
+                            player.next();
+                        } catch (IOException io) {
+                            io.printStackTrace();
+                        }
+                    };
+                    new Thread(next).start();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
+
+    @Deprecated
     public JPanel getView() {
         return playerView.getPanel();
     }
 
     public ChangeListener getStateListener() {
-        return new StateListener();
+        return stateListener;
     }
 
     // Listens to the state property of the server status.
@@ -153,9 +172,27 @@ public class PlayerControl implements ActionListener {
             System.out.printf("%s: %s\n", getClass().getName(), state);
 
             if (state.equals(PlayerProperties.PLAY)) {
-                playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPauseButtonIcon());
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
+
+                        playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPauseButtonIcon());
+                    }
+                });
+
             } else {
-                playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPlayButtonIcon());
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
+
+                        playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPlayButtonIcon());
+                    }
+                });
+
             }
         }
     }

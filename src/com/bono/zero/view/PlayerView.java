@@ -4,12 +4,13 @@ import com.bono.zero.laf.BonoIconFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
  */
-public class PlayerView {
+public class PlayerView extends JPanel {
 
     public static final String PREVIOUS = "previous";
     public static final String STOP = "stop";
@@ -21,18 +22,17 @@ public class PlayerView {
     private JButton play;
     private JButton next;
 
-    // panel holding the buttons
-    private JPanel panel = new JPanel();
-
     // map of the buttons for later access.
     private HashMap<String, JButton> buttonMap = new HashMap<>();
 
     public PlayerView() {
+        super();
         init();
     }
 
     private void init() {
-        panel.setLayout(new FlowLayout());
+        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
+        setLayout(new FlowLayout());
         newButton(BonoIconFactory.getPreviousButtonIcon(), PREVIOUS);
         newButton(BonoIconFactory.getStopButtonIcon(), STOP);
         newButton(BonoIconFactory.getPlayButtonIcon(), PLAY);
@@ -43,14 +43,19 @@ public class PlayerView {
         JButton button = new JButton(icon);
         button.setActionCommand(action);
         buttonMap.put(action, button);
-        panel.add(button);
+        add(button);
     }
 
+    @Deprecated
     public JPanel getPanel() {
-        return panel;
+        return this;
     }
 
     public JButton getButton(String key) {
         return buttonMap.get(key);
+    }
+
+    public void addActionListener(String key, ActionListener actionListener) {
+        buttonMap.get(key).addActionListener(actionListener);
     }
 }

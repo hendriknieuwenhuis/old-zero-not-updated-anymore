@@ -26,9 +26,9 @@ import java.time.Duration;
 public class SongScroller {
 
     // the scrollview depicting the scroller.
-    private ScrollView scrollView = new ScrollView();
+    private ScrollView scrollView;
 
-    private String songId = null;
+    private String state = null;
 
     private Player player;
 
@@ -38,22 +38,25 @@ public class SongScroller {
 
     public SongScroller(Player player) {
         this.player = player;
-        scrollView.getSlider().addMouseListener(this.getMouseListener());
-
+        //scrollView.getSlider().addMouseListener(this.getMouseListener());
     }
 
+    public void setScrollView(ScrollView scrollView) {
+        this.scrollView = scrollView;
+    }
 
-
+    @Deprecated
     public JPanel getView() {
         return scrollView.getPanel();
     }
 
+
+
     /*
-    ----> !!!! Find solution for non update in-case of a
-    next song having the same time values as last set. <----
+    The 'time' property of the server status is always
+    going to be set when a change in the server status
+    occurs.
      */
-    // listens to server property 'time' holding the played time of
-    // the current playing song and total time.
     public ChangeListener getCurrentTimeListener() {
         return new ChangeListener() {
             @Override
@@ -64,6 +67,7 @@ public class SongScroller {
                 ServerProperty serverProperty = (ServerProperty) e.getSource();
                 String s = (String) serverProperty.getValue();
 
+                if (state.equals("play"))
                 initTimer(s);
 
             }
@@ -79,13 +83,20 @@ public class SongScroller {
 
         String[] time = value.split(":");
 
-        scrollView.getSlider().setMinimum(0);
-        scrollView.getSlider().setMaximum(Integer.parseInt(time[1]));
-        scrollView.getSlider().setValue(Integer.parseInt(time[0]));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.getSlider().setMinimum(0);
+                scrollView.getSlider().setMaximum(Integer.parseInt(time[1]));
+                scrollView.getSlider().setValue(Integer.parseInt(time[0]));
 
-        scrollView.getTime().setText(time(time[0]));
+                scrollView.getTime().setText(time(time[0]));
 
-        scrollView.getPlayTime().setText(time(time[1]));
+                scrollView.getPlayTime().setText(time(time[1]));
+            }
+        });
+
+
 
         // create new timer runnable. Old one
         // should be gone!
@@ -104,31 +115,41 @@ public class SongScroller {
             @Override
             public void stateChanged(ChangeEvent e) {
                 ServerProperty serverProperty = (ServerProperty) e.getSource();
-                String state = (String) serverProperty.getValue();
+                state = (String) serverProperty.getValue();
 
                 switch (state) {
                     case PlayerProperties.STOP:
 
                         // set everything '0'.
-                        scrollView.getSlider().setMinimum(0);
-                        scrollView.getSlider().setMaximum(0);
-                        scrollView.getSlider().setValue(0);
-                        scrollView.getTime().setText(time("000000"));
-                        scrollView.getPlayTime().setText(time("000000"));
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollView.getSlider().setMinimum(0);
+                                scrollView.getSlider().setMaximum(0);
+                                scrollView.getSlider().setValue(0);
+                                scrollView.getTime().setText(time("000000"));
+                                scrollView.getPlayTime().setText(time("000000"));
+                            }
+                        });
+
                         break;
 
                     case PlayerProperties.PAUSE:
 
-                        // stop the timer.
-                        if (timer != null) {
-                            timer.setRunning(false);
-                        }
+                        /*
+                        stop the timer.
+                        leave the values as they are.
+                         */
+                        if (timer != null) timer.setRunning(false);
                         break;
 
                     case PlayerProperties.PLAY:
 
-                        // init the timer.
-                        //initTimer();
+                        /*
+                        needs nothing here every time the
+                        time property of the server state is
+                        written a new timer is started.
+                         */
                         break;
                     default:
                         break;
@@ -138,7 +159,10 @@ public class SongScroller {
         };
     }
 
-
+    /*
+    Changes the 000000 second amount from the server
+    to a 00:00:00 notation.
+     */
     private String time(String seconds) {
         int time = Integer.parseInt(seconds);
         int hour = time/3600;
@@ -148,22 +172,11 @@ public class SongScroller {
         return ((hour < 10 ? "0" : "") + hour) + ":" + ((min < 10 ? "0" : "") + min) + ":" + ((sec < 10 ? "0" : "") + sec);
     }
 
-    // notify the scroller view that the song is changed,
-    // to reset the counter.
-    public ChangeListener getCurrentSongListener() {
-        return new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                ServerProperty serverProperty = (ServerProperty) e.getSource();
-                songId = (String) serverProperty.getValue();
-            }
-        };
-    }
-
-
-
     // mouse listener gives player seekcur command
     // on mouse release.
+    /*
+    TODO ADD SOMETHING TO SHOW THE TIME WHEN SCROLLING!!!!!
+     */
     private MouseListener getMouseListener() {
         return new MouseAdapter() {
             @Override
@@ -183,13 +196,22 @@ public class SongScroller {
 
     }
 
+    /*
+    Inner class 'Timer' adds every second a second to the
+    current play time of the song and moves the scroller
+    as an indication of play and played time.
+
+    When the song is not running the 'running' boolean
+    can be set to false so the 'Timer' ends its run
+    method. This also happens when the play time exceeds.
+     */
     private class Timer implements  Runnable {
 
         private boolean running = true;
 
         @Override
         public void run() {
-
+            System.out.println("NEW timer object created!");
             while (isRunning()) {
                 if (scrollView.getSlider().getValue() < scrollView.getSlider().getMaximum()) {
 
@@ -197,12 +219,18 @@ public class SongScroller {
 
                     int currValue = scrollView.getSlider().getValue();
 
-                    // add one to the value.
-                    scrollView.getSlider().setValue(currValue + 1);
-                    scrollView.getSlider().repaint();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            // add one to the value.
+                            scrollView.getSlider().setValue(currValue + 1);
 
-                    // change time.
-                    scrollView.getTime().setText(time(Integer.toString(currValue)));
+
+                            // change time.
+                            scrollView.getTime().setText(time(Integer.toString(currValue)));
+                        }
+                    });
+
 
                     // calculate sleep time.
                     long sleep = 1000 - (System.currentTimeMillis() - currTime);
@@ -227,5 +255,9 @@ public class SongScroller {
         public void setRunning(boolean running) {
             this.running = running;
         }
+
+
+
+
     }
 }

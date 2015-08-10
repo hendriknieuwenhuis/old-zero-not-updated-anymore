@@ -6,31 +6,29 @@ import java.awt.*;
 /**
  * Created by hendriknieuwenhuis on 04/08/15.
  */
-public class ScrollView {
-
-    private JPanel panel;
+public class ScrollView extends JPanel{
 
     private JSlider slider;
     private JLabel time;
     private JLabel playTime;
 
     public ScrollView() {
+        super();
         init();
     }
 
     private void init() {
-        panel = new JPanel();
-        panel.setLayout(new FlowLayout());
+        setLayout(new FlowLayout());
         time = new JLabel();
         slider = new JSlider();
         playTime = new JLabel();
-        panel.add(time);
-        panel.add(slider);
-        panel.add(playTime);
+        add(time);
+        add(slider);
+        add(playTime);
     }
 
     public JPanel getPanel() {
-        return panel;
+        return this;
     }
 
     public JSlider getSlider() {
