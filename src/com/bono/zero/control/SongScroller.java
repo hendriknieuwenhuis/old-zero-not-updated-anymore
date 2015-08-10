@@ -28,8 +28,6 @@ public class SongScroller {
     // the scrollview depicting the scroller.
     private ScrollView scrollView;
 
-    private String state = null;
-
     private Player player;
 
     private Timer timer;
@@ -115,7 +113,7 @@ public class SongScroller {
             @Override
             public void stateChanged(ChangeEvent e) {
                 ServerProperty serverProperty = (ServerProperty) e.getSource();
-                state = (String) serverProperty.getValue();
+                String state = (String) serverProperty.getValue();
 
                 switch (state) {
                     case PlayerProperties.STOP:
