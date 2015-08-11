@@ -1,6 +1,6 @@
 package com.bono.zero.control;
 
-import com.bono.zero.api.Command;
+import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.properties.StatusProperties;

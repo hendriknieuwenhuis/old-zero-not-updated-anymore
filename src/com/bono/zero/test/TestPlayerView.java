@@ -2,19 +2,14 @@ package com.bono.zero.test;
 
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.*;
-import com.bono.zero.api.properties.PlayerProperties;
+import com.bono.zero.api.models.Command;
 import com.bono.zero.api.properties.StatusProperties;
 import com.bono.zero.control.CurrentSong;
 import com.bono.zero.control.PlayerControl;
 import com.bono.zero.control.SongScroller;
-import com.bono.zero.laf.BonoIconFactory;
-import com.bono.zero.view.PlayerView;
-import com.bono.zero.view.ScrollView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -63,11 +58,11 @@ public class TestPlayerView {
         SongScroller songScroller = new SongScroller(playerScroller);
 
         // set status listeners.
-        serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
-        serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
-        serverStatus.getStatus().getSongid().setChangeListener(songScroller.getCurrentSongListener());
-        serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
-        serverStatus.getStatus().getState().setChangeListener(songScroller.getStateListener());
+       // serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
+        //serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
+        //serverStatus.getStatus().getSongid().setChangeListener(songScroller.getCurrentSongListener());
+        //serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
+        //serverStatus.getStatus().getState().setChangeListener(songScroller.getStateListener());
 
         // init status.
         List<String> statusList = null;
@@ -96,17 +91,17 @@ public class TestPlayerView {
                 constraints.gridx = 0;
 
                 // build interface.
-                panel.add(playerControl.getView(), constraints);
+                panel.add(playerControl.getPlayerView(), constraints);
 
                 constraints.weightx = 0.5;
                 constraints.gridx = 1;
 
-                panel.add(currentSong.getView(), constraints);
+                panel.add(currentSong.getSongView(), constraints);
 
                 constraints.weightx = 0.5;
                 constraints.gridx = 2;
 
-                panel.add(songScroller.getView(), constraints);
+                panel.add(songScroller.getScrollView(), constraints);
                 //panel.add(playerControl.getPlayerPanel());
                 //panel.add(currentSong.getView().getSongView());
 

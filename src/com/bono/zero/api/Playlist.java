@@ -65,7 +65,19 @@ public class Playlist {
         }
     }
 
+    @Deprecated
     public HashMap<String, Song> getPlaylist() {
         return playlist;
+    }
+
+    /*
+    Get a song, key is id of song.
+     */
+    public Song getSong(String key) {
+        return playlist.get(key);
+    }
+
+    public int getSize() {
+        return playlist.size();
     }
 }

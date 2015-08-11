@@ -1,9 +1,9 @@
 package com.bono.zero.test;
 
-import com.bono.zero.api.Command;
+import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
-import com.bono.zero.api.models.ServerProperty;
+import com.bono.zero.api.models.Property;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -30,17 +30,18 @@ public class TestStatus {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        /*
         serverStatus.getStatus().getState().setChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                ServerProperty serverProperty = (ServerProperty) e.getSource();
-                System.out.printf("%s: %s\n", getClass().getName(), serverProperty.toString());
+                Property property = (Property) e.getSource();
+                System.out.printf("%s: %s\n", getClass().getName(), property.toString());
 
             }
 
 
 
-        });
+        });*/
 
         serverStatus.setStatus(query);
 

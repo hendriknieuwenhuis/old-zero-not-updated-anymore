@@ -1,5 +1,6 @@
 package com.bono.zero.api;
 
+import com.bono.zero.api.models.Command;
 import com.bono.zero.api.properties.PlayerProperties;
 
 import java.io.IOException;

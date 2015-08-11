@@ -1,7 +1,7 @@
 package com.bono.zero.test;
 
 import com.bono.zero.ServerProperties;
-import com.bono.zero.api.Command;
+import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
 

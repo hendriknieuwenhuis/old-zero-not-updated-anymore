@@ -2,6 +2,7 @@ package com.bono.zero.test;
 
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.*;
+import com.bono.zero.api.models.Command;
 import com.bono.zero.control.CurrentSong;
 import com.bono.zero.control.Idle;
 import com.bono.zero.control.PlayerControl;
@@ -13,8 +14,6 @@ import com.bono.zero.view.SongView;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 import java.util.List;
 
 /**
@@ -54,21 +53,20 @@ public class TestPlayerFrame {
     private void init() {
         initControll();
 
-
         try {
+            // EDT
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
                     initFrame();
                     showFrame();
                 }
-            });
+            }); // END EDT
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         initModels();
-
 
     }
 
@@ -86,10 +84,10 @@ public class TestPlayerFrame {
         serverStatus = new ServerStatus();
 
         // set status listeners.
-        serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
-        serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
-        serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
-        serverStatus.getStatus().getState().setChangeListener(songScroller.getStateListener());
+        serverStatus.getStatus().getState().setPropertyChangeListener(playerControl.getStateListener());
+        serverStatus.getStatus().getSongid().setPropertyChangeListener(currentSong.getCurrentSongListener());
+        serverStatus.getStatus().getTime().setPropertyChangeListener(songScroller.getCurrentTimeListener());
+        serverStatus.getStatus().getState().setPropertyChangeListener(songScroller.getStateListener());
 
 
 

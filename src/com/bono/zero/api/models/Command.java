@@ -1,4 +1,4 @@
-package com.bono.zero.api;
+package com.bono.zero.api.models;
 
 /**
  * Created by hendriknieuwenhuis on 24/07/15.

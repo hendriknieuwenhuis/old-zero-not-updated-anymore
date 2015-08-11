@@ -1,5 +1,7 @@
 package com.bono.zero.api;
 
+import com.bono.zero.api.models.Command;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

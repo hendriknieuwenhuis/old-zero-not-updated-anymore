@@ -2,7 +2,8 @@ package com.bono.zero.test;
 
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.*;
-import com.bono.zero.api.models.ServerProperty;
+import com.bono.zero.api.models.Command;
+import com.bono.zero.api.models.Property;
 import com.bono.zero.control.CurrentSong;
 import com.bono.zero.control.Idle;
 import com.bono.zero.control.PlayerControl;
@@ -85,12 +86,12 @@ public class TestIdle {
 
 
         // set the listeners to the server status.
-        serverStatus.getStatus().getState().setChangeListener(new ListenerPrinter());
-        serverStatus.getStatus().getSongid().setChangeListener(new ListenerPrinter());
-        serverStatus.getStatus().getAudio().setChangeListener(new ListenerPrinter());
-        serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
-        serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
-        serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
+        //serverStatus.getStatus().getState().setChangeListener(new ListenerPrinter());
+        //serverStatus.getStatus().getSongid().setChangeListener(new ListenerPrinter());
+        //serverStatus.getStatus().getAudio().setChangeListener(new ListenerPrinter());
+        //serverStatus.getStatus().getState().setChangeListener(playerControl.getStateListener());
+        //serverStatus.getStatus().getSongid().setChangeListener(currentSong.getCurrentSongListener());
+        //serverStatus.getStatus().getTime().setChangeListener(songScroller.getCurrentTimeListener());
 
         // init status.
         List<String> statusList = null;
@@ -122,8 +123,8 @@ public class TestIdle {
 
         @Override
         public void stateChanged(ChangeEvent e) {
-            ServerProperty serverProperty = (ServerProperty) e.getSource();
-            System.out.printf("%s\n", (String) serverProperty.getValue());
+            Property property = (Property) e.getSource();
+            System.out.printf("%s\n", (String) property.getValue());
         }
     }
 

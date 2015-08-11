@@ -27,6 +27,7 @@ public class ScrollView extends JPanel{
         add(playTime);
     }
 
+    @Deprecated
     public JPanel getPanel() {
         return this;
     }
