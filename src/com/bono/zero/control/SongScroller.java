@@ -33,6 +33,8 @@ import java.io.IOException;
  * TODO the listeners.
  * TODO Could also be in the synchronization of processing
  * TODO the events!
+ * TODO Latency might be just computer load, it occurs not
+ * TODO every time.
  *
  */
 public class SongScroller {
@@ -140,7 +142,7 @@ public class SongScroller {
     processing previous event.
      */
     private void orderListeners(PropertyChangeEvent evt) {
-        synchronized (events) {
+        //synchronized (events) {
             if (evt.getPropertyName().equals("state")) {
                 events[1] = evt;
                 if (isEventsFull(events)) {
@@ -158,7 +160,7 @@ public class SongScroller {
                     events = new PropertyChangeEvent[2];
                 }
             }
-        }
+        //}
     }
 
     /*
