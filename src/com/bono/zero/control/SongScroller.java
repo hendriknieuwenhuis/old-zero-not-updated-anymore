@@ -36,6 +36,12 @@ import java.io.IOException;
  * TODO Latency might be just computer load, it occurs not
  * TODO every time.
  *
+ * !!!!! Misschien moet inner class Timer wel volledig bij
+ * een 'play' status de tijden schrijven in de view class.
+ * Dus initieren met de tijd string dan view setten en gaan
+ * tellen en updaten.
+ *
+ *
  */
 public class SongScroller {
 
