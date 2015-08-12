@@ -21,25 +21,6 @@ import java.io.IOException;
  *
  *
  *
- * this is basically solved
- * TODO When song is stopped property 'time' is not written so
- * TODO this controller should then only respond to the 'state'
- * TODO instead of both 'time' and 'state'.
- *
- * LOOK AT THIS!!!!
- * TODO latency in setting time when 'next' or 'previous' is
- * TODO hit must be removed.
- * TODO Possible solution complete different approach with
- * TODO the listeners.
- * TODO Could also be in the synchronization of processing
- * TODO the events!
- * TODO Latency might be just computer load, it occurs not
- * TODO every time.
- *
- * !!!!! Misschien moet inner class Timer wel volledig bij
- * een 'play' status de tijden schrijven in de view class.
- * Dus initieren met de tijd string dan view setten en gaan
- * tellen en updaten.
  *
  *
  */
@@ -100,13 +81,18 @@ public class SongScroller {
     the 'time' property. Changes are needed to be known
     to set the time labels of the scroller and to put
     the scroller at its right point.
+
+    ! If state is 'STOP' time is NOT given and NOT set
+    as a property so, NOT invoked either !
      */
     public PropertyChangeListener getCurrentTimeListener() {
         return new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.out.println(getClass().getName() + " Time listener called!");
-                orderListeners(evt);
+                //System.out.println(getClass().getName() + " Time listener called!");
+                synchronized (lock) {
+                    orderListeners(evt);
+                }
             }
         };
     }
@@ -120,8 +106,10 @@ public class SongScroller {
         return new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.out.println(getClass().getName() + " State listener called!");
-                orderListeners(evt);
+                //System.out.println(getClass().getName() + " State listener called!");
+                synchronized (lock) {
+                    orderListeners(evt);
+                }
             }
         };
     }
@@ -146,64 +134,73 @@ public class SongScroller {
     All the steps are followed within a synchronized on
     events array method so a event can not be set while
     processing previous event.
+
      */
+    private Object lock = new Object();
+    private EventBucket eventBucket = new EventBucket();
     private void orderListeners(PropertyChangeEvent evt) {
-        //synchronized (events) {
-            if (evt.getPropertyName().equals("state")) {
-                events[1] = evt;
-                if (isEventsFull(events)) {
-                    processEvents(events);
-                    events = new PropertyChangeEvent[2];
-                }
-                if (((String)events[1].getNewValue()).equals("stop")) {
-                    processEvents(events);
-                    events = new PropertyChangeEvent[2];
-                }
-            } else if (evt.getPropertyName().equals("time")) {
-                events[0] = evt;
-                if (isEventsFull(events)) {
-                    processEvents(events);
-                    events = new PropertyChangeEvent[2];
-                }
+
+        synchronized (lock) {
+            if (eventBucket.add(evt)) {
+                processEvents(eventBucket);
+                eventBucket = null;
+                eventBucket = new EventBucket();
             }
-        //}
+        }
+
     }
 
     /*
-    Iterate over events array to check if both events
-    are in the array.
+    Inner class EventBucket is the bucket holding the
+    two PropertyChangeEvent's.
+    Method 'add()' returns a boolean true when the bucket
+    is full or other demand is met.
      */
-    private boolean isEventsFull(PropertyChangeEvent[] events) {
-        for (PropertyChangeEvent event : events) {
-            if (event == null) {
-                System.out.println(getClass().getName() + "isEventFull: false!");
+    private class EventBucket {
+
+        private PropertyChangeEvent time = null;
+        private PropertyChangeEvent state = null;
+
+        public boolean add(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals("time")) {
+                time = evt;
+                if (state != null && time != null) {
+                    return true;
+                }
+                return false;
+            } else if (evt.getPropertyName().equals("state")) {
+                state = evt;
+                if (state != null && time != null) {
+                    return true;
+                } else if (((String)state.getNewValue()).equals("stop")) {
+                    return true;
+                }
                 return false;
             }
+            return false;
         }
-        System.out.println(getClass().getName() + "isEventFull: true!");
-        return true;
+
+        public PropertyChangeEvent getState() {
+            return state;
+        }
+
+        public PropertyChangeEvent getTime() {
+            return time;
+        }
+
     }
+
 
     /*
     Execute the events in the given order.
      */
-    private void processEvents(PropertyChangeEvent[] events) {
-        String state = (String) events[1].getNewValue();
-
-        System.out.println(getClass().getName() + " " + state);
+    private void processEvents(EventBucket eventBucket) {
+        String state = (String) eventBucket.getState().getNewValue();
 
         switch (state) {
             case PlayerProperties.STOP:
-                // stop the timer.
-                if (timer != null) {
-                    timer.setRunning(false);
-                    try {
-                        timerThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    timer = null;
-                }
+
+                killTimer();
 
                 // set everything 0
                 initScrollView("000000:000000");
@@ -211,46 +208,42 @@ public class SongScroller {
                 break;
 
             case PlayerProperties.PAUSE:
-                // stop the timer.
-                if (timer != null) {
-                    timer.setRunning(false);
-                    try {
-                        timerThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    timer = null;
-                }
+
+                killTimer();
+
                 break;
 
             case PlayerProperties.PLAY:
 
+                killTimer();
                 /*
-                First kill an existing timer!
-                */
-                if (timer != null) {
-                    timer.setRunning(false);
-                    try {
-                        timerThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    timer = null;
-                    System.out.println("!!!! Ended Timer !!!!");
-                }
-                /*
-                Second set the scroll view! The
-                timer reads its values from it!
+                Set the scroll view! The timer
+                reads its values from it!
                  */
-                initScrollView((String) events[0].getNewValue());
-                timer = new Timer();
+                initScrollView((String) eventBucket.getTime().getNewValue());
+                timer = new Timer(eventBucket.getTime());
                 timerThread = new Thread(timer);
                 timerThread.start();
                 break;
             default:
                 break;
         }
+    }
 
+    /*
+    Kill an existing timer!
+     */
+    private void killTimer() {
+
+        if (timer != null) {
+            timer.setRunning(false);
+            try {
+                timerThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            timer = null;
+        }
     }
 
     /*
@@ -306,26 +299,36 @@ public class SongScroller {
 
         private boolean running = true;
 
+        private PropertyChangeEvent time;
+
+        private int currValue;
+
+        public Timer(PropertyChangeEvent time) {
+            this.time = time;
+            String[] initTime = ((String) time.getNewValue()).split(":");
+            currValue = Integer.parseInt(initTime[0]);
+        }
+
         @Override
         public void run() {
-            System.out.println("NEW timer object created!");
+
             while (isRunning()) {
                 if (scrollView.getSlider().getValue() < scrollView.getSlider().getMaximum()) {
 
                     long currTime = System.currentTimeMillis();
-
-                    int currValue = scrollView.getSlider().getValue();
 
                     // EDT
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
 
-                            scrollView.getSlider().setValue(currValue + 1);
+                            scrollView.getSlider().setValue(currValue);
 
                             scrollView.getTime().setText(time(Integer.toString(currValue)));
                         }
                     }); // END EDT
+
+                    currValue++;
 
                     // calculate sleep time.
                     long sleep = 1000 - (System.currentTimeMillis() - currTime);
