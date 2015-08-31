@@ -10,6 +10,7 @@ import java.io.IOException;
  *
  * Controller for the player of the mpd server.
  */
+@Deprecated
 public class Player {
 
     private  Endpoint endpoint;

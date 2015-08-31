@@ -2,7 +2,11 @@ package com.bono.zero.control;
 
 
 import com.bono.zero.api.Player;
+import com.bono.zero.api.models.Property;
+import com.bono.zero.api.ExecuteCommand;
+import com.bono.zero.api.models.commands.Executor;
 import com.bono.zero.api.properties.PlayerProperties;
+import com.bono.zero.model.ScrollTime;
 import com.bono.zero.view.ScrollView;
 
 
@@ -12,8 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-
+import java.util.HashMap;
 
 
 /**
@@ -29,14 +32,33 @@ public class SongScroller {
     // the scrollview depicting the scroller.
     private ScrollView scrollView;
 
+    // initiate with zero's.
+    private ScrollTime scrollTime = new ScrollTime("0:0");
+
     private Player player;
+
+    private Executor executor;
 
     private Timer timer;
 
     private Thread timerThread;
 
+    private PropertyChangeListener timePropertyListener;
+
+    private PropertyChangeListener statePropertyListener;
+
+    private MouseAdapter mouseAdapter;
+
+    // holding the properties given by the listeners.
+    private HashMap<String, Property> properties = new HashMap<>(2);
+
+    @Deprecated
     public SongScroller(Player player) {
         this.player = player;
+    }
+
+    public SongScroller(Executor executor) {
+        this.executor = executor;
     }
 
     public void setScrollView(ScrollView scrollView) {
@@ -58,22 +80,60 @@ public class SongScroller {
     TODO ADD SOMETHING TO SHOW THE TIME WHEN SCROLLING!!!!!
      */
     private MouseListener getMouseListener() {
-        return new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);
-                JSlider slider = (JSlider) e.getSource();
+        if (mouseAdapter == null) {
+            mouseAdapter = (new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    super.mouseReleased(e);
+                    JSlider slider = (JSlider) e.getSource();
 
-                if (!slider.getValueIsAdjusting()) {
-                    try {
-                        player.seekcur(Integer.toString(slider.getValue()));
-                    } catch (IOException io) {
-                        io.printStackTrace();
+                    if (!slider.getValueIsAdjusting()) {
+
+                        executor.addCommand(new ExecuteCommand(PlayerProperties.SEEKCUR, Integer.toString(slider.getValue())));
                     }
                 }
-            }
-        };
+            });
+        }
 
+        return mouseAdapter;
+
+    }
+
+    /*
+    This listener is called when the value changes in
+    the 'time' property. Changes are needed to be known
+    to set the time labels of the scroller and to put
+    the scroller at its right point.
+     */
+    public PropertyChangeListener getTimePropertyListener() {
+        if (timePropertyListener == null) {
+            timePropertyListener = (evt) -> {
+                synchronized (properties) {
+                    Property property = (Property) evt.getSource();
+                    properties.put(property.getName(), property);
+                    execute();
+                }
+            };
+        }
+        return timePropertyListener;
+    }
+
+    /*
+    This listener is called when the value changes in
+    the 'state' property. Changes are needed to be known
+    to control the timer, whether it has to run or not.
+     */
+    public PropertyChangeListener getStatePropertyListener() {
+        if (statePropertyListener == null) {
+            statePropertyListener = (evt) -> {
+                synchronized (properties) {
+                    Property property = (Property) evt.getSource();
+                    properties.put(property.getName(), property);
+                    execute();
+                }
+            };
+        }
+        return statePropertyListener;
     }
 
     /*
@@ -85,14 +145,19 @@ public class SongScroller {
     ! If state is 'STOP' time is NOT given and NOT set
     as a property so, NOT invoked either !
      */
+    @Deprecated
     public PropertyChangeListener getCurrentTimeListener() {
         return new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                //System.out.println(getClass().getName() + " Time listener called!");
-                synchronized (lock) {
-                    orderListeners(evt);
+
+                synchronized (properties) {
+                    Property property = (Property) evt.getSource();
+                    properties.put(property.getName(), property);
+                    execute();
                 }
+
+
             }
         };
     }
@@ -102,108 +167,43 @@ public class SongScroller {
     the 'state' property. Changes are needed to be known
     to control the timer, whether it has to run or not.
      */
+    @Deprecated
     public PropertyChangeListener getStateListener() {
         return new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                //System.out.println(getClass().getName() + " State listener called!");
-                synchronized (lock) {
-                    orderListeners(evt);
+
+                synchronized (properties) {
+                    Property property = (Property) evt.getSource();
+                    properties.put(property.getName(), property);
+                    execute();
                 }
             }
         };
     }
 
 
-    /*
-    The events array, to be set by the two listeners.
-     */
-    private PropertyChangeEvent[] events = new PropertyChangeEvent[2];
-    /*
-    orderListeners sorts both listeners and adds
-    them to the events array.
 
-    Each statement follows the same steps:
-    - the event is added to the events array at a
-    particular place.
-    - the events array is checked whether its full.
-    - if full, the events are executed in the specified
-    order of placement.
-    - if not full, the method ends.
 
-    All the steps are followed within a synchronized on
-    events array method so a event can not be set while
-    processing previous event.
-
-     */
-    private Object lock = new Object();
-    private EventBucket eventBucket = new EventBucket();
-    private void orderListeners(PropertyChangeEvent evt) {
-
-        synchronized (lock) {
-            if (eventBucket.add(evt)) {
-                processEvents(eventBucket);
-                eventBucket = null;
-                eventBucket = new EventBucket();
+    private void execute() {
+        if (properties.containsKey("state")) {
+            if (((String)properties.get("state").getValue()).equals("stop")) {
+                setScrollerValues();;
             }
+        } else if (properties.containsKey("state") && properties.containsKey("time")) {
+            setScrollerValues();
         }
-
     }
 
-    /*
-    Inner class EventBucket is the bucket holding the
-    two PropertyChangeEvent's.
-    Method 'add()' returns a boolean true when the bucket
-    is full or other demand is met.
-     */
-    private class EventBucket {
-
-        private PropertyChangeEvent time = null;
-        private PropertyChangeEvent state = null;
-
-        public boolean add(PropertyChangeEvent evt) {
-            if (evt.getPropertyName().equals("time")) {
-                time = evt;
-                if (state != null && time != null) {
-                    return true;
-                }
-                return false;
-            } else if (evt.getPropertyName().equals("state")) {
-                state = evt;
-                if (state != null && time != null) {
-                    return true;
-                } else if (((String)state.getNewValue()).equals("stop")) {
-                    return true;
-                }
-                return false;
-            }
-            return false;
-        }
-
-        public PropertyChangeEvent getState() {
-            return state;
-        }
-
-        public PropertyChangeEvent getTime() {
-            return time;
-        }
-
-    }
-
-
-    /*
-    Execute the events in the given order.
-     */
-    private void processEvents(EventBucket eventBucket) {
-        String state = (String) eventBucket.getState().getNewValue();
-
-        switch (state) {
+    private void setScrollerValues() {
+        switch ((String)properties.get("state").getValue()) {
             case PlayerProperties.STOP:
 
                 killTimer();
 
                 // set everything 0
-                initScrollView("000000:000000");
+                scrollTime.setTime("0:0");
+                initScrollView();
 
                 break;
 
@@ -220,15 +220,24 @@ public class SongScroller {
                 Set the scroll view! The timer
                 reads its values from it!
                  */
-                initScrollView((String) eventBucket.getTime().getNewValue());
-                timer = new Timer(eventBucket.getTime());
+
+                scrollTime.setTime((String)properties.get("time").getValue());
+                initScrollView();
+                timer = new Timer();
                 timerThread = new Thread(timer);
                 timerThread.start();
+
                 break;
             default:
                 break;
         }
+
+        // remove the properties.
+        properties.clear();
+
     }
+
+
 
     /*
     Kill an existing timer!
@@ -253,38 +262,27 @@ public class SongScroller {
 
     example: 000000:000000
      */
-    private void initScrollView(String value) {
+    private void initScrollView() {
 
-        String[] time = value.split(":");
+        //String[] time = value.split(":");
 
         // EDT
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 scrollView.getSlider().setMinimum(0);
-                scrollView.getSlider().setMaximum(Integer.parseInt(time[1]));
-                scrollView.getSlider().setValue(Integer.parseInt(time[0]));
+                scrollView.getSlider().setMaximum(Integer.parseInt(scrollTime.getTotalTime()));
+                scrollView.getSlider().setValue(Integer.parseInt(scrollTime.getCurrentTime()));
 
-                scrollView.getTime().setText(time(time[0]));
+                scrollView.getTime().setText(scrollTime.getCurrentTimeHhMmSs());
 
-                scrollView.getPlayTime().setText(time(time[1]));
+                scrollView.getPlayTime().setText(scrollTime.getTotalTimeHhMmSs());
             }
         }); // END EDT
 
     }
 
-    /*
-    Changes the 000000 second amount from the server
-    to a 00:00:00 notation.
-     */
-    private String time(String seconds) {
-        int time = Integer.parseInt(seconds);
-        int hour = time/3600;
-        int rem = time%3600;
-        int min = rem/60;
-        int sec = rem%60;
-        return ((hour < 10 ? "0" : "") + hour) + ":" + ((min < 10 ? "0" : "") + min) + ":" + ((sec < 10 ? "0" : "") + sec);
-    }
+
 
     /*
     Inner class 'Timer' adds every second a second to the
@@ -299,18 +297,14 @@ public class SongScroller {
 
         private boolean running = true;
 
-        private PropertyChangeEvent time;
-
         private int currValue;
 
-        public Timer(PropertyChangeEvent time) {
-            this.time = time;
-            String[] initTime = ((String) time.getNewValue()).split(":");
-            currValue = Integer.parseInt(initTime[0]);
-        }
+        public Timer() {}
 
         @Override
         public void run() {
+
+            currValue = Integer.parseInt(scrollTime.getCurrentTime());
 
             while (isRunning()) {
                 if (scrollView.getSlider().getValue() < scrollView.getSlider().getMaximum()) {
@@ -324,11 +318,12 @@ public class SongScroller {
 
                             scrollView.getSlider().setValue(currValue);
 
-                            scrollView.getTime().setText(time(Integer.toString(currValue)));
+                            scrollView.getTime().setText(scrollTime.getCurrentTimeHhMmSs());
                         }
                     }); // END EDT
 
                     currValue++;
+                    scrollTime.setCurrentTime(Integer.toString(currValue));
 
                     // calculate sleep time.
                     long sleep = 1000 - (System.currentTimeMillis() - currTime);

@@ -114,7 +114,7 @@ public class TestPlayerFrame {
         serverStatus.setStatus(statusList);
 
         // idle thread.
-        Idle idle = new Idle(serverStatus);
+        Idle idle = new Idle(HOST, PORT, serverStatus);
         Thread thread = new Thread(idle);
         thread.start();
 
@@ -153,10 +153,10 @@ public class TestPlayerFrame {
     }
 
     private void showFrame() {
-        playerView.addActionListener(PlayerView.PREVIOUS, playerControl.getButtonsListener());
-        playerView.addActionListener(PlayerView.STOP, playerControl.getButtonsListener());
-        playerView.addActionListener(PlayerView.PLAY, playerControl.getButtonsListener());
-        playerView.addActionListener(PlayerView.NEXT, playerControl.getButtonsListener());
+        playerView.addActionListener(PlayerView.PREVIOUS, playerControl.getPreviousListener());
+        playerView.addActionListener(PlayerView.STOP, playerControl.getStopListener());
+        playerView.addActionListener(PlayerView.PLAY, playerControl.getPlayListener());
+        playerView.addActionListener(PlayerView.NEXT, playerControl.getNextListener());
 
         frame.pack();
         frame.setVisible(true);

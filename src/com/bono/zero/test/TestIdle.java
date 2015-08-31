@@ -107,7 +107,7 @@ public class TestIdle {
 
         // the idle thread, listens to the changes
         // in the server.
-        Runnable idle = new Idle(serverStatus);
+        Runnable idle = new Idle(HOST, PORT, serverStatus);
         new Thread(idle).start();
 
         frame.getContentPane().add(panel);

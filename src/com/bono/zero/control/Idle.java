@@ -1,66 +1,114 @@
 package com.bono.zero.control;
 
+import com.bono.zero.ServerProperties;
+import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
+
+import com.bono.zero.api.models.commands.Executor;
+import com.bono.zero.api.models.commands.ReturnExecutor;
 import com.bono.zero.api.properties.StatusProperties;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Created by hendriknieuwenhuis on 06/08/15.
+ *
+ * Idle extends executor en
  */
 public class Idle implements Runnable {
 
-    private static ServerStatus serverStatus;
 
-    public Idle(ServerStatus serverStatus) {
+
+    private ServerStatus serverStatus;
+    private String host;
+    private int port;
+
+    private Endpoint endpointIdle;
+
+    private Endpoint endpointExecutor;
+
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+    private LinkedList<Future<List<String>>> list = new LinkedList<>();
+
+
+    private boolean running = true;
+
+    public Idle(String host, int port, ServerStatus serverStatus) {
+        this.host = host;
+        this.port = port;
         this.serverStatus = serverStatus;
+        initExecutor();
+    }
+
+    private void initExecutor() {
+        endpointExecutor = new Endpoint(host, port);
+
+
     }
 
     @Override
     public void run() {
-        Endpoint endpointIdle = new Endpoint("192.168.2.2", 6600);
+        endpointIdle = new Endpoint(host, port);
         // keeps running.
-        while (true) {
+        while (running) {
             System.out.printf("%s, active: %s, %s\n", Thread.currentThread().getName(), Thread.activeCount(), getClass().getName());
             List<String> feedback = null;
             try {
-                feedback = endpointIdle.request(new Command(StatusProperties.IDLE));
+                feedback = endpointIdle.sendRequest(new RequestCommand(StatusProperties.IDLE));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-                /*
-                Implement a read of the feedback
-                and act to it.
-                 */
-            for (String line : feedback) {
-                System.out.println(line);
-            }
 
             updateServerStatus();
+            for (String line : feedback) {
+                if (line.startsWith("changed")) {
+
+                }
+            }
+
+            for (int i = 0; i < list.size(); i++) {
+                Future<List<String>> future = list.removeFirst();
+                try {
+                    print(future.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
 
     }
 
-    private static void updateServerStatus() {
-        final Endpoint endpointUpdate = new Endpoint("192.168.2.2", 6600);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.printf("%s, active: %s, %s\n", Thread.currentThread().getName() + " update server status", Thread.activeCount(), null);
-                List<String> statusList = null;
-                try {
-                    statusList = endpointUpdate.request(new Command(StatusProperties.STATUS));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                serverStatus.setStatus(statusList);
-            }
-        });
-        thread.start();
+    private void updateServerStatus() {
+        synchronized (serverStatus) {
+
+        }
+    }
+
+    public void stopRunning() {
+        running = false;
+        try {
+            endpointIdle.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
+
+    private void print(List<String> list) {
+        for (String s : list) {
+            System.out.printf("%s\n", s);
+        }
+    }
+
+
 }

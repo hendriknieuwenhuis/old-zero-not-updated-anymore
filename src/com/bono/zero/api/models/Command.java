@@ -9,6 +9,7 @@ package com.bono.zero.api.models;
  * The request can be gotten as byte as the server requests
  * bytes.
  */
+@Deprecated
 public class Command {
 
     private String request;

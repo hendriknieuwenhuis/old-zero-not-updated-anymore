@@ -5,8 +5,12 @@ import com.bono.zero.api.models.Status;
 
 /**
  * Created by hendriknieuwenhuis on 28/07/15.
+ *
+ * Controller / Logic class to rule the server status!
+ *
+ * Maybe create a wrapper runnable class 1!!!!!1
  */
-public class ServerStatus {
+public class ServerStatus implements Runnable {
 
     private static final String VOLUME = "volume:";
     private static final String REPEAT = "repeat:";
@@ -48,8 +52,18 @@ public class ServerStatus {
     }
 
     /*
-    Set the status directly from queried list.
+    de serverstatus class implements runnable en heeft een
+    run method om de waarden te updaten.
      */
+
+    @Override
+    public void run() {
+
+    }
+
+    /*
+        Set the status directly from queried list.
+         */
     public void setStatus(List<String> entry) {
         //synchronized (lock) {
             for (String line : entry) {
