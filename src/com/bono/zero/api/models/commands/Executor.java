@@ -12,9 +12,9 @@ import java.util.Observable;
  * Executor must be able to be set to stop, block 'addCommand' calls
  * and exit 'run' method if commands list is empty.
  */
-public abstract class Executor<T extends Command> extends Observable implements Runnable {
+public abstract class Executor extends Observable implements Runnable {
 
-    protected LinkedList<T> commandsList = new LinkedList<>();
+    protected LinkedList<Command> commandsList = new LinkedList<>();
 
     private Endpoint endpoint;
 
@@ -75,11 +75,11 @@ public abstract class Executor<T extends Command> extends Observable implements 
         }
     }
 
-    protected Object executeCommand(T command) throws IOException {
+    protected Object executeCommand(Command command) throws IOException {
         return command.execute();
     }
 
-    public void addCommand(T command) {
+    public void addCommand(Command command) {
         if (!end) {
             command.addEndpoint(endpoint);
             commandsList.add(command);  // returns boolean!

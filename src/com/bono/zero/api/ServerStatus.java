@@ -10,7 +10,7 @@ import com.bono.zero.api.models.Status;
  *
  * Maybe create a wrapper runnable class 1!!!!!1
  */
-public class ServerStatus implements Runnable {
+public class ServerStatus {
 
     private static final String VOLUME = "volume:";
     private static final String REPEAT = "repeat:";
@@ -51,15 +51,7 @@ public class ServerStatus implements Runnable {
         status = new Status();
     }
 
-    /*
-    de serverstatus class implements runnable en heeft een
-    run method om de waarden te updaten.
-     */
 
-    @Override
-    public void run() {
-
-    }
 
     /*
         Set the status directly from queried list.

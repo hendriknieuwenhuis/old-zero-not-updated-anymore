@@ -43,14 +43,15 @@ public class Idle implements Runnable {
         this.host = host;
         this.port = port;
         this.serverStatus = serverStatus;
-        initExecutor();
+        //initExecutor();
     }
 
+    /*
     private void initExecutor() {
         endpointExecutor = new Endpoint(host, port);
 
 
-    }
+    }*/
 
     @Override
     public void run() {
@@ -65,13 +66,9 @@ public class Idle implements Runnable {
                 e.printStackTrace();
             }
 
+            print(feedback);
 
             updateServerStatus();
-            for (String line : feedback) {
-                if (line.startsWith("changed")) {
-
-                }
-            }
 
             for (int i = 0; i < list.size(); i++) {
                 Future<List<String>> future = list.removeFirst();
@@ -89,9 +86,9 @@ public class Idle implements Runnable {
     }
 
     private void updateServerStatus() {
-        synchronized (serverStatus) {
-
-        }
+        Request request = new Request(new Endpoint(host, port), new RequestCommand(StatusProperties.STATUS));
+        Future<List<String>> future = executorService.submit(request);
+        list.addFirst(future);
     }
 
     public void stopRunning() {

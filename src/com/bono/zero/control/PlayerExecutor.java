@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by hendriknieuwenhuis on 26/08/15.
  */
-public class PlayerExecutor extends Executor<String> {
+public class PlayerExecutor extends Executor {
 
     private String reply;
 
@@ -33,7 +33,7 @@ public class PlayerExecutor extends Executor<String> {
 
                 // catch exception met settings view.
                 try {
-                    reply = executeCommand(commandsList.removeFirst());
+                    reply = (String) executeCommand(commandsList.removeFirst());
                     this.notifyObservers(reply);
                 } catch (IOException e) {
                     e.printStackTrace();

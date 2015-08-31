@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by hendriknieuwenhuis on 15/08/15.
  */
-abstract class AbstractCommand<T> implements Command<T> {
+public abstract class AbstractCommand<T> implements Command<T> {
 
     protected String request;
     protected String[] args;

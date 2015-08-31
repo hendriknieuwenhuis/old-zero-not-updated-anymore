@@ -11,12 +11,11 @@ import java.util.concurrent.Callable;
  */
 public class Request implements Callable<List<String>> {
 
-    private Endpoint endpoint;
     private RequestCommand requestCommand;
 
     public Request(Endpoint endpoint, RequestCommand requestCommand) {
-        this.endpoint = endpoint;
         this.requestCommand = requestCommand;
+        requestCommand.addEndpoint(endpoint);
     }
 
     @Override

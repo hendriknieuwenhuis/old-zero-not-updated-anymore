@@ -73,6 +73,8 @@ public class ApiTestPlayerExecutor implements Observer {
 
         // start the idle thread to listen for changes.
         Idle idle = new Idle(host, port, serverStatus);
+        Thread idleThread = new Thread(idle);
+        idleThread.start();
 
 
         PlayerExecutor playerExecutor = new PlayerExecutor(endpoint);
