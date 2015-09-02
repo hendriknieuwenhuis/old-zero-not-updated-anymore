@@ -21,21 +21,11 @@ import java.util.concurrent.*;
  */
 public class Idle implements Runnable {
 
-
-
     private ServerStatus serverStatus;
     private String host;
     private int port;
 
     private Endpoint endpointIdle;
-
-    private Endpoint endpointExecutor;
-
-
-    private ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-    private LinkedList<Future<List<String>>> list = new LinkedList<>();
-
 
     private boolean running = true;
 
@@ -43,19 +33,14 @@ public class Idle implements Runnable {
         this.host = host;
         this.port = port;
         this.serverStatus = serverStatus;
-        //initExecutor();
+        endpointIdle = new Endpoint(host, port);
+
     }
 
-    /*
-    private void initExecutor() {
-        endpointExecutor = new Endpoint(host, port);
-
-
-    }*/
 
     @Override
     public void run() {
-        endpointIdle = new Endpoint(host, port);
+
         // keeps running.
         while (running) {
             System.out.printf("%s, active: %s, %s\n", Thread.currentThread().getName(), Thread.activeCount(), getClass().getName());
@@ -68,28 +53,13 @@ public class Idle implements Runnable {
 
             print(feedback);
 
-            updateServerStatus();
 
-            for (int i = 0; i < list.size(); i++) {
-                Future<List<String>> future = list.removeFirst();
-                try {
-                    print(future.get());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
 
         }
 
     }
 
-    private void updateServerStatus() {
-        Request request = new Request(new Endpoint(host, port), new RequestCommand(StatusProperties.STATUS));
-        Future<List<String>> future = executorService.submit(request);
-        list.addFirst(future);
-    }
+
 
     public void stopRunning() {
         running = false;

@@ -1,5 +1,8 @@
 package com.bono.zero.api.models;
 
+import com.bono.zero.api.events.PropertyEvent;
+import com.bono.zero.api.events.PropertyListener;
+
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -20,7 +23,10 @@ public class Property {
 
     // the listeners to this property.
     //private Listener listener;
+    @Deprecated
     private List<PropertyChangeListener> listeners;
+
+    private List<PropertyListener> propertyListeners;
 
     public Property() {}
 
@@ -48,6 +54,7 @@ public class Property {
         Object oldValue = this.value;
         this.value = value;
         invokeListeners(oldValue);
+        callListeners();
     }
 
     public String getName() {
@@ -59,6 +66,7 @@ public class Property {
     }
 
 
+    @Deprecated
     private void invokeListeners(Object oldValue) {
         if (listeners != null) {
             for (PropertyChangeListener listener : listeners) {
@@ -73,17 +81,36 @@ public class Property {
         }
     }
 
+    private void callListeners() {
+        if (propertyListeners != null) {
+            for (PropertyListener listener : propertyListeners) {
+                new Thread(() -> {
+                    listener.propertyChange(new PropertyEvent(this));
+                }).start();
+            }
+        }
+    }
 
+
+    @Deprecated
     public List<PropertyChangeListener> getChangeListener() {
         return listeners;
     }
 
 
+    @Deprecated
     public void setPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
         if (listeners == null) {
             listeners = new ArrayList<>();
         }
         listeners.add(propertyChangeListener);
+    }
+
+    public void setPropertyListeners(PropertyListener propertyListener) {
+        if (propertyListeners == null) {
+            propertyListeners = new ArrayList<>();
+        }
+        propertyListeners.add(propertyListener);
     }
 
     @Override

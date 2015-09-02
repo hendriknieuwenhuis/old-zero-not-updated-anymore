@@ -2,6 +2,7 @@ package com.bono.zero.control;
 
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ExecuteCommand;
+import com.bono.zero.api.models.commands.Command;
 import com.bono.zero.api.models.commands.Executor;
 import com.bono.zero.api.properties.PlayerProperties;
 
@@ -10,13 +11,18 @@ import java.io.IOException;
 /**
  * Created by hendriknieuwenhuis on 26/08/15.
  */
-public class PlayerExecutor extends Executor {
+public class PlayerExecutor extends Executor<String> {
 
     private String reply;
 
 
     public PlayerExecutor(Endpoint endpoint) {
         super(endpoint);
+    }
+
+    @Override
+    protected String executeCommand(Command command) throws IOException {
+        return endpoint.sendCommand(command);
     }
 
     @Override
@@ -33,12 +39,12 @@ public class PlayerExecutor extends Executor {
 
                 // catch exception met settings view.
                 try {
-                    reply = (String) executeCommand(commandsList.removeFirst());
-                    this.notifyObservers(reply);
+                    reply = executeCommand(commandsList.removeFirst());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                this.notifyObservers(reply);
                 // act on server reply.
                 if (!reply.equals("OK")) {
                     System.out.println("WHAAAAT!");
@@ -46,6 +52,8 @@ public class PlayerExecutor extends Executor {
             }
         }
     }
+
+
 
     public void next() {
 

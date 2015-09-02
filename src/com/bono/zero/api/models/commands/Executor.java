@@ -3,7 +3,9 @@ package com.bono.zero.api.models.commands;
 import com.bono.zero.api.Endpoint;
 
 import java.io.IOException;
+import java.util.EventObject;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -12,11 +14,13 @@ import java.util.Observable;
  * Executor must be able to be set to stop, block 'addCommand' calls
  * and exit 'run' method if commands list is empty.
  */
-public abstract class Executor extends Observable implements Runnable {
+public abstract class Executor<T> extends Observable implements Runnable {
+
+    //private List<EventObject>
 
     protected LinkedList<Command> commandsList = new LinkedList<>();
 
-    private Endpoint endpoint;
+    protected Endpoint endpoint;
 
     private Object lock = new Object();
 
@@ -30,6 +34,7 @@ public abstract class Executor extends Observable implements Runnable {
     Constructor assigns the endpoint.
      */
     public Executor(Endpoint endpoint) {
+        super();
         this.endpoint = endpoint;
     }
 
@@ -75,9 +80,8 @@ public abstract class Executor extends Observable implements Runnable {
         }
     }
 
-    protected Object executeCommand(Command command) throws IOException {
-        return command.execute();
-    }
+    protected abstract T executeCommand(Command command) throws IOException;
+
 
     public void addCommand(Command command) {
         if (!end) {

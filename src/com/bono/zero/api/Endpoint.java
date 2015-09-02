@@ -162,6 +162,7 @@ public class Endpoint {
                     break;
                 }
             }
+            reader.close();
             socket.close();
         } catch (IOException e) {
             new IOException("check connection settings");

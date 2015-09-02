@@ -89,6 +89,10 @@ public class ApiTestPlayerExecutor implements Observer {
             typed = keyboard.nextLine().split(" ");
             System.out.printf("You typed, %s\n", typed);
             switch (typed[0]) {
+                case PlayerProperties.STOP:
+                    playerExecutor.stop();
+                    break;
+
                 case PlayerProperties.PLAY:
                     playerExecutor.play();
                     break;
@@ -102,26 +106,13 @@ public class ApiTestPlayerExecutor implements Observer {
                     break;
 
                 case PlayerProperties.PLAYID:
-                    String id = typed[1];
-                    playerExecutor.playid(id);
+                    playerExecutor.playid(typed[1]);
                     break;
 
                 case PlayerProperties.PAUSE:
-                    String[] args = null;
-
-                    System.out.println(typed.length);
-
-                    if (typed.length > 1) {
-                        int length = (typed.length - 1);
-                        args = new String[length];
-                        System.arraycopy(typed, 1, args, 0, length);
-                    }
-                    if (args != null) {
-                        for (int i = 0; i < args.length; i++) {
-                            System.out.println(args[i]);
-                        }
-                    }
+                    playerExecutor.pause(typed[1]);
                     break;
+
                 case PlaylistProperties.PLAYLISTINFO:
                     executeRequest(new RequestCommand(PlaylistProperties.PLAYLISTINFO));
                     break;
@@ -138,21 +129,21 @@ public class ApiTestPlayerExecutor implements Observer {
         }
     }
 
-    private void argumentBuilder(String[] args, String arg) {
-
-    }
-
     private void executeRequest(Command<List<String>> command) {
-        List<String> feedback = null;
-        command.addEndpoint(endpoint);
-        try {
-            feedback = command.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (String line : feedback) {
-            System.out.println(line);
-        }
+        Runnable execute = () -> {
+            List<String> feedback = null;
+            command.addEndpoint(new Endpoint(host, port));
+            try {
+                feedback = command.execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for (String line : feedback) {
+                System.out.println(line);
+            }
+        };
+        Thread executeThread = new Thread(execute);
+        executeThread.start();
     }
 
     private Thread setServerStatus(Endpoint endpoint) {
@@ -170,14 +161,21 @@ public class ApiTestPlayerExecutor implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        reply = (String) arg;
-        System.out.printf("Command replies: %s\n", reply);
+
+        System.out.printf("Command replies: %s\n", (String) arg);
     }
 
     private PropertyChangeListener getSongidListener() {
         return (PropertyChangeEvent) -> {
           executeRequest(new RequestCommand(ServerProperties.CURRENTSONG));
+
         };
+    }
+
+
+
+    private void print(List<String> list) {
+
     }
 
     public static  void main(String[] args) {
