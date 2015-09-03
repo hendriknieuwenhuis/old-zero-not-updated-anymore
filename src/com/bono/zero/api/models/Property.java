@@ -9,17 +9,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by hendriknieuwenhuis on 30/07/15.
  */
-public class Property {
+public class Property<T> {
 
     // the name of the proprty.
     private String name;
 
     // the value of this property.
-    private Object value;
+    private T value;
+
+
 
     // the listeners to this property.
     //private Listener listener;
@@ -28,20 +31,23 @@ public class Property {
 
     private List<PropertyListener> propertyListeners;
 
+
+
     public Property() {}
 
     public Property(String name) {
         this.name = name;
     }
 
-    public Object getValue() {
+    public T getValue() {
         return value;
-
     }
+
+
 
     // when value is changed its set and
     // the listener is called.
-    public void setValue(Object value) {
+    public void setValue(T value) {
 
         //System.out.println(name + " " + (String) value);
         // listener must always be invoked
@@ -50,11 +56,11 @@ public class Property {
         // In the object that reads the value
         // it can judged on being changed!
         //
-
         Object oldValue = this.value;
         this.value = value;
         invokeListeners(oldValue);
         callListeners();
+
     }
 
     public String getName() {
@@ -84,9 +90,11 @@ public class Property {
     private void callListeners() {
         if (propertyListeners != null) {
             for (PropertyListener listener : propertyListeners) {
-                new Thread(() -> {
-                    listener.propertyChange(new PropertyEvent(this));
-                }).start();
+                //synchronized (lock) {
+                    //new Thread(() -> {
+                        listener.propertyChange(new PropertyEvent(this));
+                    //}).start();
+                //}
             }
         }
     }
@@ -106,7 +114,7 @@ public class Property {
         listeners.add(propertyChangeListener);
     }
 
-    public void setPropertyListeners(PropertyListener propertyListener) {
+    public void addPropertyListeners(PropertyListener propertyListener) {
         if (propertyListeners == null) {
             propertyListeners = new ArrayList<>();
         }

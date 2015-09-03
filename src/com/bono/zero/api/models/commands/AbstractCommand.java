@@ -12,10 +12,24 @@ import java.util.List;
  */
 public abstract class AbstractCommand<T> implements Command<T> {
 
-    protected String request;
+    protected String command;
     protected String[] args;
 
     protected Endpoint endpoint;
+
+    public AbstractCommand(String command) {
+        this.command = command;
+    }
+
+    public AbstractCommand(String command, String arg) {
+        this.command = command;
+        this.args = new String[]{arg};
+    }
+
+    public AbstractCommand(String command, String[] args) {
+        this.command = command;
+        this.args = args;
+    }
 
     /**
      * Returns the command, request and arguments as a
@@ -25,19 +39,19 @@ public abstract class AbstractCommand<T> implements Command<T> {
     @Override
     public byte[] getCommand() {
 
-        String command = null;
-        if (request != null) {
-            command = request;
+        String outCommand = null;
+        if (command != null) {
+            outCommand = command;
             if (args != null) {
                 for (String arg : args) {
-                    command = command + " " + arg;
+                    outCommand = outCommand + " " + arg;
                 }
             }
         } else {
             return null;
         }
-        command += "\n";
-        return command.getBytes();
+        outCommand += "\n";
+        return outCommand.getBytes();
     }
 
     @Override
@@ -45,12 +59,15 @@ public abstract class AbstractCommand<T> implements Command<T> {
         this.endpoint = endpoint;
     }
 
+    public abstract T execute() throws IOException;
+
 
     @Override
     public String toString() {
         return "AbstractCommand{" +
                 "args=" + Arrays.toString(args) +
-                ", request='" + request + '\'' +
+                ", request='" + command + '\'' +
                 '}';
     }
+
 }

@@ -1,18 +1,13 @@
 package com.bono.zero.control;
 
-import com.bono.zero.ServerProperties;
 import com.bono.zero.api.RequestCommand;
-import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
 
-import com.bono.zero.api.models.commands.Executor;
-import com.bono.zero.api.models.commands.ReturnExecutor;
 import com.bono.zero.api.properties.StatusProperties;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * Created by hendriknieuwenhuis on 06/08/15.
@@ -53,7 +48,7 @@ public class Idle implements Runnable {
 
             print(feedback);
 
-
+            new Thread(new UpdateStatus()).start();
 
         }
 
@@ -74,6 +69,20 @@ public class Idle implements Runnable {
     private void print(List<String> list) {
         for (String s : list) {
             System.out.printf("%s\n", s);
+        }
+    }
+
+    private class UpdateStatus implements Runnable {
+
+        private Endpoint endpoint = new Endpoint(host, port);
+
+        @Override
+        public void run() {
+            try {
+                serverStatus.setStatus(endpoint.sendRequest(new RequestCommand(StatusProperties.STATUS)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

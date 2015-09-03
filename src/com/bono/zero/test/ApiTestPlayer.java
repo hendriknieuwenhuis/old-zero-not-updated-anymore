@@ -141,7 +141,7 @@ public class ApiTestPlayer {
 
             // init status.
             serverStatus = new ServerStatus();
-            serverStatus.getStatus().getState().setPropertyChangeListener(getStateListener());
+            serverStatus.getStatus().getStateProperty().setPropertyChangeListener(getStateListener());
 
             idle = new Idle(HOST, PORT, serverStatus);
             Thread threadIdle = new Thread(idle);

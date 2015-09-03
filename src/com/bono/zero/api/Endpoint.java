@@ -95,9 +95,11 @@ public class Endpoint {
                 }
                 response.add(line);
             }
-            socket.close();
+
         } catch (IOException e) {
             new IOException("check connection settings");
+        } finally {
+            socket.close();
         }
         return response;
 
@@ -162,10 +164,12 @@ public class Endpoint {
                     break;
                 }
             }
-            reader.close();
-            socket.close();
+
+
         } catch (IOException e) {
             new IOException("check connection settings");
+        } finally {
+            socket.close();
         }
         return line;
     }

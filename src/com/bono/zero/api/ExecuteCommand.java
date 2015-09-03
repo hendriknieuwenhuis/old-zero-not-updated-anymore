@@ -10,23 +10,21 @@ import java.io.IOException;
 public class ExecuteCommand extends AbstractCommand<String> {
 
     // Command without arguments
-    public ExecuteCommand(String request) {
-        super();
-        this.request = request;
+    public ExecuteCommand(String command) {
+        super(command);
+
     }
 
     // Command with single argument
-    public ExecuteCommand(String request, String arg) {
-        super();
-        this.request = request;
-        this.args = new String[]{arg};
+    public ExecuteCommand(String command, String arg) {
+        super(command, arg);
+
     }
 
     // Command with multiple arguments
-    public ExecuteCommand(String request, String[] args) {
-        super();
-        this.request = request;
-        this.args = args;
+    public ExecuteCommand(String command, String[] args) {
+        super(command, args);
+
     }
 
 

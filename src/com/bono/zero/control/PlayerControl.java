@@ -169,15 +169,15 @@ public class PlayerControl  {
             // when state is 'play' the
             // 'pause {1}' command is given,
             // to pause the player.
-            if (((String)serverStatus.getStatus().getState().getValue()).equals(PlayerProperties.PLAY)) {
+            if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PLAY)) {
 
                 executor.addCommand(new ExecuteCommand(PlayerProperties.PAUSE, "1"));
 
-            } else if (((String)serverStatus.getStatus().getState().getValue()).equals(PlayerProperties.PAUSE)) {
+            } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PAUSE)) {
 
                 executor.addCommand(new ExecuteCommand(PlayerProperties.PAUSE, "0"));
 
-            } else if (((String)serverStatus.getStatus().getState().getValue()).equals(PlayerProperties.STOP)) {
+            } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.STOP)) {
 
                 executor.addCommand(new ExecuteCommand(PlayerProperties.PLAY));
             }

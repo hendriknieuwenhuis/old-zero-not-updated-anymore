@@ -11,23 +11,21 @@ import java.util.List;
 public class RequestCommand extends AbstractCommand<List<String>> {
 
     // Command without arguments
-    public RequestCommand(String request) {
-        super();
-        this.request = request;
+    public RequestCommand(String command) {
+        super(command);
+
     }
 
     // Command with single argument
-    public RequestCommand(String request, String arg) {
-        super();
-        this.request = request;
-        this.args = new String[]{arg};
+    public RequestCommand(String command, String arg) {
+        super(command, arg);
+
     }
 
     // Command with multiple arguments
-    public RequestCommand(String request, String[] args) {
-        super();
-        this.request = request;
-        this.args = args;
+    public RequestCommand(String command, String[] args) {
+        super(command, args);
+
     }
 
 

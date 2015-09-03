@@ -17,17 +17,22 @@ public class ApiTestPropertyEvent {
     //private MockProperty mockProperty;
     private MockListener mockListener;
 
+    //private Object lock = new Object();
+
     public ApiTestPropertyEvent() {
         //mockProperty = new MockProperty("hallo");
         mockListener = new MockListener();
         property = new Property("hallo");
         //mockProperty.addPropertyListener(mockListener);
-        property.setPropertyListeners(mockListener);
+        property.addPropertyListeners(mockListener);
     }
 
     public void setValue(String value) {
         //mockProperty.setValue(value);
-        property.setValue(value);
+        //synchronized (property.lock) {
+            property.setValue(value);
+        //}
+        //property.setAtomicValue(value);
     }
 
     public void sleepLittle() {
@@ -46,13 +51,13 @@ public class ApiTestPropertyEvent {
 
         ApiTestPropertyEvent apiTestPropertyEvent = new ApiTestPropertyEvent();
         apiTestPropertyEvent.setValue("hello");
-        apiTestPropertyEvent.sleepLittle();
+        //apiTestPropertyEvent.sleepLittle();
         apiTestPropertyEvent.setValue("hullo");
-        apiTestPropertyEvent.sleepLittle();
+        //apiTestPropertyEvent.sleepLittle();
         apiTestPropertyEvent.setValue("hollo");
-        apiTestPropertyEvent.sleepLittle();
+        //apiTestPropertyEvent.sleepLittle();
         apiTestPropertyEvent.setValue("hillo");
-        apiTestPropertyEvent.sleepLittle();
+        //apiTestPropertyEvent.sleepLittle();
     }
 
     private class MockProperty {
@@ -88,11 +93,12 @@ public class ApiTestPropertyEvent {
 
     private class MockListener implements PropertyListener {
 
-
         @Override
         public void propertyChange(PropertyEvent propertyEvent) {
             Property source = (Property) propertyEvent.getSource();
-            System.out.printf("%s\n", (String)source.getValue());
+            //synchronized (source.lock) {
+                System.out.printf("%s\n", (String) source.getValue());
+            //}
         }
     }
 }

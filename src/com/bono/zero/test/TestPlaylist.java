@@ -1,6 +1,7 @@
 package com.bono.zero.test;
 
 import com.bono.zero.ServerProperties;
+import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
@@ -19,7 +20,7 @@ public class TestPlaylist {
         endpoint.setPort(6600);
         List<String> request = null;
         try {
-             request = endpoint.request(new Command(ServerProperties.LIST));
+             request = endpoint.sendRequest(new RequestCommand(ServerProperties.LIST));
         } catch (IOException e) {
             e.printStackTrace();
         }

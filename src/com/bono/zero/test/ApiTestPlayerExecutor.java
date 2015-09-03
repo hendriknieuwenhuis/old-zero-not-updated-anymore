@@ -3,6 +3,9 @@ package com.bono.zero.test;
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
+import com.bono.zero.api.events.PropertyEvent;
+import com.bono.zero.api.events.PropertyListener;
+import com.bono.zero.api.models.Property;
 import com.bono.zero.api.models.commands.Command;
 import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.properties.PlayerProperties;
@@ -18,7 +21,7 @@ import java.util.*;
 /**
  * Created by hendriknieuwenhuis on 28/08/15.
  */
-public class ApiTestPlayerExecutor implements Observer {
+public class ApiTestPlayerExecutor {
 
     String host;
     int port;
@@ -60,7 +63,7 @@ public class ApiTestPlayerExecutor implements Observer {
         }
 
         // add listeners.
-        serverStatus.getStatus().getSongid().setPropertyChangeListener(getSongidListener());
+        serverStatus.getStatus().getSongidProperty().addPropertyListeners(getSongidListener());
 
         // set the status.
         Thread thread1 = setServerStatus(endpoint);
@@ -78,7 +81,7 @@ public class ApiTestPlayerExecutor implements Observer {
 
 
         PlayerExecutor playerExecutor = new PlayerExecutor(endpoint);
-        playerExecutor.addObserver(this);
+
         Thread thread2 = new Thread(playerExecutor);
         thread2.start();
 
@@ -159,23 +162,29 @@ public class ApiTestPlayerExecutor implements Observer {
         return thread;
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-
-        System.out.printf("Command replies: %s\n", (String) arg);
-    }
-
-    private PropertyChangeListener getSongidListener() {
-        return (PropertyChangeEvent) -> {
-          executeRequest(new RequestCommand(ServerProperties.CURRENTSONG));
+    private PropertyListener getSongidListener() {
+        return (PropertyEvent propertyEvent) -> {
+            String id = ((Property<String>) propertyEvent.getSource()).getValue();
+            Endpoint endpoint = new Endpoint(host, port);
+            new Thread(() -> {
+                try {
+                    print(endpoint.sendRequest(new RequestCommand(PlaylistProperties.PLAYLISTID, id)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
         };
     }
 
 
 
-    private void print(List<String> list) {
 
+
+    private void print(List<String> list) {
+        for (String line : list) {
+            System.out.println(this.getClass().getName() + " " + line);
+        }
     }
 
     public static  void main(String[] args) {

@@ -61,49 +61,49 @@ public class ServerStatus {
             for (String line : entry) {
                 //System.out.println(line);
                 if (line.startsWith(VOLUME)) {
-                    status.getVolume().setValue(line.substring((VOLUME.length() + 1)));
+                    status.setVolume(line.substring((VOLUME.length() + 1)));
                 } else if (line.startsWith(REPEAT)) {
-                    status.getRepeat().setValue(line.substring((REPEAT.length() + 1)));
+                    status.setRepeat(line.substring((REPEAT.length() + 1)));
                 } else if (line.startsWith(RANDOM)) {
-                    status.getRandom().setValue(line.substring((RANDOM.length() + 1)));
+                    status.setRandom(line.substring((RANDOM.length() + 1)));
                 } else if (line.startsWith(SINGLE)) {
-                    status.getSingle().setValue(line.substring((SINGLE.length() + 1)));
+                    status.setSingle(line.substring((SINGLE.length() + 1)));
                 } else if (line.startsWith(CONSUME)) {
-                    status.getConsume().setValue(line.substring((CONSUME.length() + 1)));
+                    status.setConsume(line.substring((CONSUME.length() + 1)));
                 } else if (line.startsWith(PLAYLIST)) {
-                    status.getPlaylist().setValue(line.substring((PLAYLIST.length() + 1)));
+                    status.setPlaylist(line.substring((PLAYLIST.length() + 1)));
                 } else if (line.startsWith(PLAYLISTLENGTH)) {
-                    status.getPlaylistlength().setValue(line.substring((PLAYLISTLENGTH.length() + 1)));
+                    status.setPlaylistlength(line.substring((PLAYLISTLENGTH.length() + 1)));
                 } else if (line.startsWith(STATE)) {
-                    status.getState().setValue(line.substring((STATE.length() + 1)));
+                    status.setState(line.substring((STATE.length() + 1)));
                 } else if (line.startsWith(SONG)) {
-                    status.getSong().setValue(line.substring((SONG.length() + 1)));
+                    status.setSong(line.substring((SONG.length() + 1)));
                 } else if (line.startsWith(SONGID)) {
-                    status.getSongid().setValue(line.substring((SONGID.length() + 1)));
+                    status.setSongid(line.substring((SONGID.length() + 1)));
                 } else if (line.startsWith(NEXTSONG)) {
-                    status.getNextsong().setValue(line.substring((NEXTSONG.length() + 1)));
+                    status.setNextsong(line.substring((NEXTSONG.length() + 1)));
                 } else if (line.startsWith(NEXTSONGID)) {
-                    status.getNextsongid().setValue(line.substring((NEXTSONGID.length() + 1)));
+                    status.setNextsongid(line.substring((NEXTSONGID.length() + 1)));
                 } else if (line.startsWith(TIME)) {
-                    status.getTime().setValue(line.substring((TIME.length() + 1)));
+                    status.setTime(line.substring((TIME.length() + 1)));
                 } else if (line.startsWith(ELAPSED)) {
-                    status.getElapsed().setValue(line.substring((ELAPSED.length() + 1)));
+                    status.setElapsed(line.substring((ELAPSED.length() + 1)));
                 } else if (line.startsWith(DURATION)) {
-                    status.getDuration().setValue(line.substring((DURATION.length() + 1)));
+                    status.setDuration(line.substring((DURATION.length() + 1)));
                 } else if (line.startsWith(BITRATE)) {
-                    status.getBitrate().setValue(line.substring((BITRATE.length() + 1)));
+                    status.setBitrate(line.substring((BITRATE.length() + 1)));
                 } else if (line.startsWith(XFADE)) {
-                    status.getXfade().setValue(line.substring((XFADE.length() + 1)));
+                    status.setXfade(line.substring((XFADE.length() + 1)));
                 } else if (line.startsWith(MIXRAMPDB)) {
-                    status.getMixrampdb().setValue(line.substring((MIXRAMPDB.length() + 1)));
+                    status.setMixrampdb(line.substring((MIXRAMPDB.length() + 1)));
                 } else if (line.startsWith(MIXRAMPDELAY)) {
-                    status.getMixrampdelay().setValue(line.substring((MIXRAMPDELAY.length() + 1)));
+                    status.setMixrampdelay(line.substring((MIXRAMPDELAY.length() + 1)));
                 } else if (line.startsWith(AUDIO)) {
-                    status.getAudio().setValue(line.substring((AUDIO.length() + 1)));
+                    status.setAudio(line.substring((AUDIO.length() + 1)));
                 } else if (line.startsWith(UPDATING)) {
-                    status.getUpdating().setValue(line.substring((UPDATING.length() + 1)));
+                    status.setUpdating(line.substring((UPDATING.length() + 1)));
                 } else if (line.startsWith(ERROR)) {
-                    status.getError().setValue(line.substring((ERROR.length() + 1)));
+                    status.setError(line.substring((ERROR.length() + 1)));
                 } else {
                     // if a line is not a variable.
                     System.out.println(line);
