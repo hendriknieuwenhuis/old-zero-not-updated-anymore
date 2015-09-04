@@ -1,6 +1,5 @@
 package com.bono.zero.control;
 
-import com.bono.zero.api.Player;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.models.Property;
 import com.bono.zero.api.ExecuteCommand;
@@ -13,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
@@ -26,13 +24,7 @@ public class PlayerControl  {
      */
     private PlayerView playerView;
 
-    /*
-    Player controller sending the various
-    command to control the player of the
-    server to the server.
-     */
-    @Deprecated
-    private Player player;
+
 
     /*
     String state gets set by the <code>StateListener</code>
@@ -64,21 +56,13 @@ public class PlayerControl  {
 
     public PlayerControl() {}
 
-    @Deprecated
-    public PlayerControl(Player player) {
-        this.player = player;
 
-    }
 
     public PlayerControl(PlayerExecutor executor, ServerStatus serverStatus) {
         this.serverStatus = serverStatus;
         this.executor = executor;
     }
 
-    @Deprecated
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
 
 
     public void setPlayerView(PlayerView playerView) {
@@ -184,20 +168,7 @@ public class PlayerControl  {
         };
 
     }
-    @Deprecated
-    public ActionListener getNextListener() {
-        return actionEvent -> {
-            Runnable runnable = () -> {
-                try {
-                    player.next();
-                } catch (IOException io) {
-                    io.printStackTrace();
-                }
-            };
-            new Thread(runnable).start();
-        };
 
-    }
 
     @Deprecated
     private class ButtonsListener implements ActionListener {
@@ -211,40 +182,43 @@ public class PlayerControl  {
                 case PlayerView.PREVIOUS:
                     //System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PREVIOUS");
                     Runnable previous = () -> {
+                        /*
                         try {
-                            player.previous();
+                            //player.previous();
                         } catch (IOException io) {
                             io.printStackTrace();
-                        }
+                        }*/
                     };
                     new Thread(previous).start();
                     break;
                 case PlayerView.STOP:
                     //System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_STOP");
                     Runnable stop = () -> {
+                        /*
                         try {
-                            player.stop();
+                            //player.stop();
                         } catch (IOException io) {
                             io.printStackTrace();
-                        }
+                        }*/
                     };
                     new Thread(stop).start();
                     break;
                 case PlayerView.PLAY:
                     //System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_PLAY");
                     Runnable play = () -> {
+                        /*
                         try {
                             // when state is 'play' the
                             // 'pause {1}' command is given,
                             // to pause the player.
                             if (state.equals(PlayerProperties.PLAY)) {
-                                player.pause("1");
+                                //player.pause("1");
 
                                 // when state is 'pause' the
                                 // 'pause {0}' command is given,
                                 // to resume the player.
                             } else if (state.equals(PlayerProperties.PAUSE)) {
-                                player.pause("0");
+                                //player.pause("0");
 
                                 // when state is 'stop' the
                                 // 'play' command is given,
@@ -253,22 +227,23 @@ public class PlayerControl  {
                                 // from the beginning of the
                                 // first song of the playlist.
                             } else if (state.equals(PlayerProperties.STOP)) {
-                                player.play();
+                                //player.play();
                             }
                         } catch (IOException io) {
                             io.printStackTrace();
-                        }
+                        }*/
                     };
                     new Thread(play).start();
                     break;
                 case PlayerView.NEXT:
                     //System.out.printf("%s, %s\n", getClass().getName(), "PLAYERVIEW_NEXT");
                     Runnable next = () -> {
+                        /*
                         try {
-                            player.next();
+                            //player.next();
                         } catch (IOException io) {
                             io.printStackTrace();
-                        }
+                        }*/
                     };
                     new Thread(next).start();
                     break;

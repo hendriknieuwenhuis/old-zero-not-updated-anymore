@@ -1,7 +1,7 @@
 package com.bono.zero.control;
 
 
-import com.bono.zero.api.Player;
+import com.bono.zero.api.events.PropertyListener;
 import com.bono.zero.api.models.Property;
 import com.bono.zero.api.ExecuteCommand;
 import com.bono.zero.api.models.commands.Executor;
@@ -14,9 +14,6 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 
 
 /**
@@ -35,29 +32,25 @@ public class SongScroller {
     // initiate with zero's.
     private ScrollTime scrollTime = new ScrollTime("0:0");
 
-    private Player player;
-
     private Executor executor;
 
     private Timer timer;
 
     private Thread timerThread;
 
-    private PropertyChangeListener timePropertyListener;
+    private PropertyListener timePropertyListener;
 
-    private PropertyChangeListener statePropertyListener;
+    private PropertyListener statePropertyListener;
 
     private MouseAdapter mouseAdapter;
 
     // holding the properties given by the listeners.
-    private HashMap<String, Property> properties = new HashMap<>(2);
+    private Property<String>[] propertiesArray = new Property[2];
 
-    @Deprecated
-    public SongScroller(Player player) {
-        this.player = player;
-    }
 
-    public SongScroller(Executor executor) {
+
+    public SongScroller(Executor executor, ScrollView scrollView) {
+        this.scrollView = scrollView;
         this.executor = executor;
     }
 
@@ -94,9 +87,7 @@ public class SongScroller {
                 }
             });
         }
-
         return mouseAdapter;
-
     }
 
     /*
@@ -105,12 +96,11 @@ public class SongScroller {
     to set the time labels of the scroller and to put
     the scroller at its right point.
      */
-    public PropertyChangeListener getTimePropertyListener() {
+    public PropertyListener getTimePropertyListener() {
         if (timePropertyListener == null) {
             timePropertyListener = (evt) -> {
-                synchronized (properties) {
-                    Property property = (Property) evt.getSource();
-                    properties.put(property.getName(), property);
+                synchronized (propertiesArray) {
+                    propertiesArray[0] = (Property<String>) evt.getSource();
                     execute();
                 }
             };
@@ -123,12 +113,11 @@ public class SongScroller {
     the 'state' property. Changes are needed to be known
     to control the timer, whether it has to run or not.
      */
-    public PropertyChangeListener getStatePropertyListener() {
+    public PropertyListener getStatePropertyListener() {
         if (statePropertyListener == null) {
             statePropertyListener = (evt) -> {
-                synchronized (properties) {
-                    Property property = (Property) evt.getSource();
-                    properties.put(property.getName(), property);
+                synchronized (propertiesArray) {
+                    propertiesArray[1] = (Property<String>) evt.getSource();
                     execute();
                 }
             };
@@ -136,108 +125,60 @@ public class SongScroller {
         return statePropertyListener;
     }
 
-    /*
-    This listener is called when the value changes in
-    the 'time' property. Changes are needed to be known
-    to set the time labels of the scroller and to put
-    the scroller at its right point.
-
-    ! If state is 'STOP' time is NOT given and NOT set
-    as a property so, NOT invoked either !
-     */
-    @Deprecated
-    public PropertyChangeListener getCurrentTimeListener() {
-        return new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                synchronized (properties) {
-                    Property property = (Property) evt.getSource();
-                    properties.put(property.getName(), property);
-                    execute();
-                }
-
-
-            }
-        };
-    }
-
-    /*
-    This listener is called when the value changes in
-    the 'state' property. Changes are needed to be known
-    to control the timer, whether it has to run or not.
-     */
-    @Deprecated
-    public PropertyChangeListener getStateListener() {
-        return new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                synchronized (properties) {
-                    Property property = (Property) evt.getSource();
-                    properties.put(property.getName(), property);
-                    execute();
-                }
-            }
-        };
-    }
-
-
-
-
     private void execute() {
-        if (properties.containsKey("state")) {
-            if (((String)properties.get("state").getValue()).equals("stop")) {
-                setScrollerValues();;
+        if (propertiesArray[1] != null) {
+            if (propertiesArray[1].getValue().equals("stop")) {
+                setScrollerValues();
             }
-        } else if (properties.containsKey("state") && properties.containsKey("time")) {
+        } else if (propertiesArray[1] != null && propertiesArray[0] != null) {
             setScrollerValues();
         }
     }
 
     private void setScrollerValues() {
-        switch ((String)properties.get("state").getValue()) {
-            case PlayerProperties.STOP:
+        try {
+            switch (propertiesArray[1].getValue()) {
+                case PlayerProperties.STOP:
 
-                killTimer();
+                    killTimer();
 
-                // set everything 0
-                scrollTime.setTime("0:0");
-                initScrollView();
+                    // set everything 0
+                    scrollTime.setTime("0:0");
+                    initScrollView();
 
-                break;
+                    break;
 
-            case PlayerProperties.PAUSE:
+                case PlayerProperties.PAUSE:
 
-                killTimer();
+                    killTimer();
 
-                break;
+                    break;
 
-            case PlayerProperties.PLAY:
+                case PlayerProperties.PLAY:
 
-                killTimer();
+                    killTimer();
                 /*
                 Set the scroll view! The timer
                 reads its values from it!
                  */
 
-                scrollTime.setTime((String)properties.get("time").getValue());
-                initScrollView();
-                timer = new Timer();
-                timerThread = new Thread(timer);
-                timerThread.start();
+                    scrollTime.setTime(propertiesArray[0].getValue());
+                    initScrollView();
+                    timer = new Timer();
+                    timerThread = new Thread(timer);
+                    timerThread.start();
 
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
+        } finally {
+            // remove the properties.
+            propertiesArray[0] = null;
+            propertiesArray[1] = null;
+            propertiesArray = new Property[2];
         }
-
-        // remove the properties.
-        properties.clear();
-
     }
-
-
 
     /*
     Kill an existing timer!
@@ -281,8 +222,6 @@ public class SongScroller {
         }); // END EDT
 
     }
-
-
 
     /*
     Inner class 'Timer' adds every second a second to the
