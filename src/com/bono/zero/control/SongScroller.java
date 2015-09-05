@@ -32,7 +32,7 @@ public class SongScroller {
     // initiate with zero's.
     private ScrollTime scrollTime = new ScrollTime("0:0");
 
-    private Executor executor;
+    private Executor<String> executor;
 
     private Timer timer;
 
@@ -49,7 +49,7 @@ public class SongScroller {
 
 
 
-    public SongScroller(Executor executor, ScrollView scrollView) {
+    public SongScroller(Executor<String> executor, ScrollView scrollView) {
         this.scrollView = scrollView;
         this.executor = executor;
     }

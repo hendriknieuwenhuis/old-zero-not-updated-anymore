@@ -22,6 +22,7 @@ import com.bono.zero.util.Observable;
  * @author bono
  *
  */
+@Deprecated
 public class Playlist extends Observable implements TableModel {
 	
 	private final String SLASH           = "/";

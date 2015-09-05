@@ -46,6 +46,7 @@ public class PlayerExecutor extends Executor<String> {
                 }
                 this.notifyObservers(reply);
                 // act on server reply.
+                //System.out.println(reply);
                 if (!reply.equals("OK")) {
                     System.out.println("WHAAAAT!");
                 }

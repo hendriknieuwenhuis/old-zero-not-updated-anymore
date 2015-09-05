@@ -39,26 +39,7 @@ public abstract class Executor<T> extends Observable implements Runnable {
     }
 
 
-    /*
-    @Override
-    public void run() {
 
-        running = true;
-        while (running) {
-            if (commandsList.size() == 0) {
-                wait = true;
-                goWait();
-            }
-
-            if (commandsList.size() > 0) {
-                String reply = executeCommand(commandsList.removeFirst());
-                if (!reply.equals("OK")) {
-                    System.out.println("WHAAAAT!");
-                }
-            }
-        }
-
-    }*/
 
     // set boolean end true
     // so addcommand gets blocked.
