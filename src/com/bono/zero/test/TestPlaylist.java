@@ -3,22 +3,15 @@ package com.bono.zero.test;
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.ServerStatus;
-import com.bono.zero.api.models.Command;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
-import com.bono.zero.api.models.Song;
-import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.control.Idle;
 import com.bono.zero.control.PlayerExecutor;
 import com.bono.zero.control.PlaylistControl;
 import com.bono.zero.view.PlaylistView;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.List;
 
@@ -77,13 +70,13 @@ public class TestPlaylist {
             tableModel.setValueAt(playlist.getList().get(i).getArtist(), i, 2);
         }
 
-        playlistControl = new PlaylistControl(playerExecutor, playlistView, playlist);
+        //playlistControl = new PlaylistControl(playerExecutor, playlistView, playlist);
 
 
 
         SwingUtilities.invokeLater(() -> {
-            playlistView = new PlaylistView(tableModel);
-            //playlistView.getTable().setModel(tableModel);
+            playlistView = new PlaylistView();
+            playlistView.getTable().setModel(tableModel);
             listSelectionModel = playlistView.getTable().getSelectionModel();
             listSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             listSelectionModel.addListSelectionListener(playlistControl.getListSelectionListener());

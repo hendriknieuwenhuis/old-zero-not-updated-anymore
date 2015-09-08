@@ -2,6 +2,7 @@ package com.bono.zero.model;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -29,6 +30,11 @@ public class Directory extends Observable {
 		directory = new DefaultTreeModel(music);
 	}
 
+	public Directory(List<String> entry) {
+		this();
+		setDirectory(entry);
+	}
+
 	@Deprecated
 	public TreeModel getDirectory() {
 		return directory;
@@ -38,7 +44,7 @@ public class Directory extends Observable {
 		return directory;
 	}
 	
-	public void setDirectory(String[] directory) {
+	public void setDirectory(List<String> directory) {
 		
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) this.directory.getRoot();
 		DefaultMutableTreeNode node = null;

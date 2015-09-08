@@ -91,7 +91,7 @@ public class UpdaterController {
                     break;
                 case DIRECTORY_UPDATE:
                     try {
-                        controller.getDirectory().setDirectory(controller.getServer().sendCommand(new Command("listall")));
+                        //controller.getDirectory().setDirectory(controller.getServer().sendCommand(new Command("listall")));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

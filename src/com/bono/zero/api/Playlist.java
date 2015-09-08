@@ -28,6 +28,12 @@ public class Playlist {
 
     private LinkedList<Song> list;
 
+    public Playlist() {}
+
+    public Playlist(List<String> entry) {
+        populate(entry);
+    }
+
     public void populate(List<String> entry) {
 
             list = new LinkedList<>();

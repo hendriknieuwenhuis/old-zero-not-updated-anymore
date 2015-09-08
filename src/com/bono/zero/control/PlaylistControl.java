@@ -25,10 +25,35 @@ public class PlaylistControl {
 
     private PlayerExecutor playerExecutor;
 
-    public PlaylistControl(PlayerExecutor playerExecutor, PlaylistView playlistView, Playlist playlist) {
+    public PlaylistControl() {}
+
+    public PlaylistControl(PlayerExecutor playerExecutor, Playlist playlist) {
         this.playerExecutor = playerExecutor;
-        this.playlistView = playlistView;
         this.playlist = playlist;
+    }
+
+    public PlaylistView getPlaylistView() {
+        return playlistView;
+    }
+
+    public void setPlaylistView(PlaylistView playlistView) {
+        this.playlistView = playlistView;
+    }
+
+    public Playlist getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(Playlist playlist) {
+        this.playlist = playlist;
+    }
+
+    public PlayerExecutor getPlayerExecutor() {
+        return playerExecutor;
+    }
+
+    public void setPlayerExecutor(PlayerExecutor playerExecutor) {
+        this.playerExecutor = playerExecutor;
     }
 
     public ListSelectionListener getListSelectionListener() {
