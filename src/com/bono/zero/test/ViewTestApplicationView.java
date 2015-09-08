@@ -137,7 +137,7 @@ public class ViewTestApplicationView extends WindowAdapter {
         initControllers();
 
         applicationView.getFolderView().getFolderTree().setModel(folderControl.getDirectory().getModel());
-        applicationView.getPlaylistView().getTable().setModel(tableModel);
+        applicationView.getPlaylistView().setTableModel(tableModel);
         folderControl.setFolderView(applicationView.getFolderView());
         playlistControl.setPlaylistView(applicationView.getPlaylistView());
 

@@ -60,8 +60,21 @@ public class ApplicationView extends JFrame {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setContinuousLayout(true);
-        splitPane.setLeftComponent(folderView);
-        splitPane.setRightComponent(playlistView);
+        splitPane.setDividerLocation(0.50);
+        splitPane.setOneTouchExpandable(true);
+
+        JScrollPane folderScrollPane = new JScrollPane();
+        folderScrollPane.setViewportView(folderView);
+        folderScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        folderScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        splitPane.setLeftComponent(folderScrollPane);
+
+        JScrollPane playlistScrollPane = new JScrollPane();
+        playlistScrollPane.setViewportView(playlistView);
+        playlistScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        playlistScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        splitPane.setRightComponent(playlistScrollPane);
         this.getContentPane().add(splitPane, BorderLayout.CENTER);
     }
 

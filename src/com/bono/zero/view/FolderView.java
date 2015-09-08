@@ -17,10 +17,9 @@ public class FolderView extends JPanel {
 
     private void init() {
         tree = new JTree();
-        scrollPane = new JScrollPane(tree);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane);
+
+
+        add(tree);
     }
 
     public JTree getFolderTree() {
