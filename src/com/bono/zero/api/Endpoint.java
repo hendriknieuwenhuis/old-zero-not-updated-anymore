@@ -2,10 +2,7 @@ package com.bono.zero.api;
 
 import com.bono.zero.api.models.Command;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -16,6 +13,9 @@ import java.util.List;
  * Created by hendriknieuwenhuis on 24/07/15.
  */
 public class Endpoint {
+
+    public static final String COMMAND_LIST_OK_BEGIN = "command_list_ok_begin";
+    public static final String COMMAND_LIST_END = "command_list_end";
 
     private String host;
     private int port;
@@ -87,7 +87,7 @@ public class Endpoint {
         BufferedReader reader;
         try {
             connect();
-            writer(command.getCommand());
+            writer(command.getCommandBytes());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((line = reader.readLine()) != null) {
                 if (line.equals("OK") || line.startsWith("ACK")) {
@@ -153,7 +153,7 @@ public class Endpoint {
         String line = null;
         try {
             connect();
-            writer(command.getCommand());
+            writer(command.getCommandBytes());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((line = reader.readLine()) != null) {
 
@@ -170,6 +170,54 @@ public class Endpoint {
             new IOException("check connection settings");
         } finally {
             socket.close();
+        }
+        return line;
+    }
+
+    /*
+    The list must be converted to one line of bytes to send.
+     */
+    public String sendCommand(List<com.bono.zero.api.models.commands.Command> commands) throws IOException, NullPointerException {
+        //BufferedReader reader;
+        //OutputStream writer = null;
+        String line = null;
+
+        try {
+            if (commands.get(0).getCommandString().equals(COMMAND_LIST_OK_BEGIN)) {
+                //connect();
+                //writer = socket.getOutputStream();
+
+                byte[] list = null;
+                List<Byte> byteList = new ArrayList<>();
+
+                // execute.
+                // needs socket implementation in while loop.
+                for (com.bono.zero.api.models.commands.Command command : commands) {
+                    System.out.println(command.getCommandString());
+                    //writer(command.getCommandBytes());
+                    //writer.write(command.getCommandBytes());
+                    //writer.flush();
+                    //reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    //line = reader.readLine();
+                    for (byte b : command.getCommandBytes()) {
+                        byteList.add(b);
+                    }
+                    //byteList.add(File.separator.get)
+                    line = sendCommand(command);
+                    System.out.println(line);
+                    if (line.startsWith("ACK")) {
+                        return line;
+                    } else if (line.equals("OK")) {
+                        break;
+                    }
+
+                }
+            } else {
+                new NullPointerException();
+            }
+        } finally {
+            //writer.flush();
+            //socket.close();
         }
         return line;
     }

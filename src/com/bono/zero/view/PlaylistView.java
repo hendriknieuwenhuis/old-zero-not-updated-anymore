@@ -21,6 +21,7 @@ public class PlaylistView extends JPanel {
 
     private void init() {
         table = new JTable();
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         add(table);
     }
 

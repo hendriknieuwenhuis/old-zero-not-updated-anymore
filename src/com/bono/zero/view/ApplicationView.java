@@ -14,9 +14,11 @@ public class ApplicationView extends JFrame {
 
     private SongView songView;
 
-    private PlaylistView playlistView;
+    private JTable playlistView;
 
-    private FolderView folderView;
+
+
+    private JTree folderView;
 
     public ApplicationView() throws HeadlessException {
         init();
@@ -45,8 +47,12 @@ public class ApplicationView extends JFrame {
         playerView = new PlayerView();
         scrollView = new ScrollView();
         songView = new SongView();
-        playlistView = new PlaylistView();
-        folderView = new FolderView();
+
+        playlistView = new JTable();
+        playlistView.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
+
+
+        folderView = new JTree();
     }
 
 
@@ -61,7 +67,7 @@ public class ApplicationView extends JFrame {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setContinuousLayout(true);
         splitPane.setDividerLocation(0.50);
-        splitPane.setOneTouchExpandable(true);
+        //splitPane.setOneTouchExpandable(true);
 
         JScrollPane folderScrollPane = new JScrollPane();
         folderScrollPane.setViewportView(folderView);
@@ -90,11 +96,11 @@ public class ApplicationView extends JFrame {
         return songView;
     }
 
-    public PlaylistView getPlaylistView() {
+    public JTable getPlaylistView() {
         return playlistView;
     }
 
-    public FolderView getFolderView() {
+    public JTree getFolderView() {
         return folderView;
     }
 }

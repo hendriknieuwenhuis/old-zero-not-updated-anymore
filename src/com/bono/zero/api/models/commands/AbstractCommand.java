@@ -37,7 +37,7 @@ public abstract class AbstractCommand<T> implements Command<T> {
      * @return byte[]
      */
     @Override
-    public byte[] getCommand() {
+    public byte[] getCommandBytes() {
 
         String outCommand = null;
         if (command != null) {
@@ -52,6 +52,11 @@ public abstract class AbstractCommand<T> implements Command<T> {
         }
         outCommand += "\n";
         return outCommand.getBytes();
+    }
+
+    @Override
+    public String getCommandString() {
+        return command;
     }
 
     @Override

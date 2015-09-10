@@ -9,6 +9,9 @@ import com.bono.zero.view.PlaylistView;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class PlaylistControl {
 
     private int row;
 
-    private PlaylistView playlistView;
+    private JTable playlistView;
 
     private Playlist playlist;
 
@@ -32,11 +35,26 @@ public class PlaylistControl {
         this.playlist = playlist;
     }
 
-    public PlaylistView getPlaylistView() {
+    public void setColumnWidth(int column) {
+
+        int width = 0;
+        for (row = 0; row < playlistView.getRowCount(); row++) {
+            TableCellRenderer renderer = playlistView.getCellRenderer(row, column);
+            Component comp = playlistView.prepareRenderer(renderer, row, column);
+            width = Math.max (comp.getPreferredSize().width, width);
+        }
+        playlistView.getColumnModel().getColumn(column).setPreferredWidth(width);
+        System.out.println(getClass().getName() + " " + width);
+
+    }
+
+
+
+    public JTable getPlaylistView() {
         return playlistView;
     }
 
-    public void setPlaylistView(PlaylistView playlistView) {
+    public void setPlaylistView(JTable playlistView) {
         this.playlistView = playlistView;
     }
 

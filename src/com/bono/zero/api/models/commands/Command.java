@@ -12,7 +12,9 @@ public interface Command<T> {
 
     void addEndpoint(Endpoint endpoint);
 
-    byte[] getCommand();
+    byte[] getCommandBytes();
+
+    String getCommandString();
 
     T execute() throws IOException;
 

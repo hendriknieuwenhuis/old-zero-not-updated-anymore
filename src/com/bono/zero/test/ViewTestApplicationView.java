@@ -13,6 +13,7 @@ import com.bono.zero.view.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -27,7 +28,6 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private final String HOST = "192.168.2.2";
     private final int PORT = 6600;
-
 
     private ApplicationView applicationView;
 
@@ -45,9 +45,11 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private Thread playerExecutorThread;
 
+
+
     public ViewTestApplicationView() {
-        //initModels();
-        //initControllers();
+        initModels();
+        initControllers();
         init();
     }
 
@@ -75,7 +77,11 @@ public class ViewTestApplicationView extends WindowAdapter {
         // create Playlist.
         playlist = new Playlist(entry);
 
-        tableModel = new DefaultTableModel();
+        String[] columnNames = {"", "title", "artist"};
+        tableModel = new DefaultTableModel(null, columnNames);
+
+
+
 
         tableModel.setColumnCount(3);
         tableModel.setRowCount(playlist.getList().size());
@@ -95,13 +101,16 @@ public class ViewTestApplicationView extends WindowAdapter {
      */
     private void initControllers() {
 
-        folderControl = new FolderControl(directory);
+
+
 
         // create PlayerExecutor.
         playerExecutor = new PlayerExecutor(new Endpoint(HOST, PORT));
         playerExecutorThread = new Thread(playerExecutor);
 
         playerExecutorThread.start();
+
+        folderControl = new FolderControl(directory, playerExecutor);
 
         // create PlaylistControl.
         playlistControl = new PlaylistControl(playerExecutor, playlist);
@@ -114,13 +123,14 @@ public class ViewTestApplicationView extends WindowAdapter {
      */
     private void init() {
         SwingUtilities.invokeLater(() -> {
-
             applicationView = new ApplicationView();
             applicationView.addWindowListener(this);
-            // applicationView.getFolderView().getFolderTree().setModel(folderControl.getDirectory().getModel());
-            // applicationView.getPlaylistView().getTable().setModel(tableModel);
-            // folderControl.setFolderView(applicationView.getFolderView());
-            // playlistControl.setPlaylistView(applicationView.getPlaylistView());
+            applicationView.getFolderView().setModel(folderControl.getDirectory().getModel());
+            applicationView.getPlaylistView().setModel(tableModel);
+            applicationView.getPlaylistView().getColumnModel().getColumn(0).setPreferredWidth(5);
+            folderControl.setFolderView(applicationView.getFolderView());
+            playlistControl.setPlaylistView(applicationView.getPlaylistView());
+            playlistControl.setColumnWidth(0);
             applicationView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             applicationView.pack();
             applicationView.setVisible(true);
@@ -133,14 +143,6 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         System.out.println("Activated " + Thread.currentThread().getName());
 
-        initModels();
-        initControllers();
-
-        applicationView.getFolderView().getFolderTree().setModel(folderControl.getDirectory().getModel());
-        applicationView.getPlaylistView().setTableModel(tableModel);
-        folderControl.setFolderView(applicationView.getFolderView());
-        playlistControl.setPlaylistView(applicationView.getPlaylistView());
-
     }
 
     @Override
@@ -149,11 +151,12 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         System.out.println("Deactivated");
 
+        /*
         playerExecutor.end();
         playerExecutorThread = null;
 
         directory = null;
-        playlist = null;
+        playlist = null;*/
 
     }
 
