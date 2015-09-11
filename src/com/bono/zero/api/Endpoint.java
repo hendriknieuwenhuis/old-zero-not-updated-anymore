@@ -1,12 +1,14 @@
 package com.bono.zero.api;
 
 import com.bono.zero.api.models.Command;
+import com.bono.zero.api.models.commands.AbstractCommand;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -178,46 +180,68 @@ public class Endpoint {
     The list must be converted to one line of bytes to send.
      */
     public String sendCommand(List<com.bono.zero.api.models.commands.Command> commands) throws IOException, NullPointerException {
-        //BufferedReader reader;
-        //OutputStream writer = null;
+        BufferedReader reader;
+        OutputStream writer = null;
         String line = null;
 
         try {
             if (commands.get(0).getCommandString().equals(COMMAND_LIST_OK_BEGIN)) {
-                //connect();
-                //writer = socket.getOutputStream();
+                connect();
+                writer = socket.getOutputStream();
 
-                byte[] list = null;
-                List<Byte> byteList = new ArrayList<>();
+                //byte[] list = null;
+                //List<Byte> byteList = new ArrayList<>();
+                String args = null;
 
                 // execute.
                 // needs socket implementation in while loop.
+
+                // TODO DIT MOET IN BYTES COMMAND.GETCOMMANDBYTES().
                 for (com.bono.zero.api.models.commands.Command command : commands) {
-                    System.out.println(command.getCommandString());
-                    //writer(command.getCommandBytes());
-                    //writer.write(command.getCommandBytes());
-                    //writer.flush();
-                    //reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    //line = reader.readLine();
-                    for (byte b : command.getCommandBytes()) {
-                        byteList.add(b);
-                    }
-                    //byteList.add(File.separator.get)
-                    line = sendCommand(command);
-                    System.out.println(line);
-                    if (line.startsWith("ACK")) {
-                        return line;
-                    } else if (line.equals("OK")) {
-                        break;
+                    String arg = null;
+                    if (((AbstractCommand)command).getArgs() != null) {
+
+                        arg = Arrays.toString(((AbstractCommand) command).getArgs());
+                        arg = arg.substring(1, (arg.length() - 1));
+                        args = args + command.getCommandString() + arg + File.separator;
+
+
+                    } else {
+                        if (command.getCommandString().equals(COMMAND_LIST_OK_BEGIN)) {
+                            if (args != null) {
+                                args = command.getCommandString() + File.separator + args;
+                            } else {
+                                args = command.getCommandString() + File.separator;
+                            }
+                        } else if (command.getCommandString().equals(COMMAND_LIST_END)) {
+                            args = args + command.getCommandString();
+                        }
                     }
 
+
+
                 }
+                args += "\n";
+                System.out.println(args);
+                writer(args.getBytes());
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                while ((line = reader.readLine()) != null) {
+
+                    // print.
+                    //System.out.printf("%s: %s\n", getClass().getName(), line);
+
+                    //if (line.equals("OK") || line.startsWith("ACK")) {
+                    //    break;
+                    //}
+                    System.out.println(line);
+                }
+
             } else {
                 new NullPointerException();
             }
         } finally {
-            //writer.flush();
-            //socket.close();
+            writer.flush();
+            socket.close();
         }
         return line;
     }

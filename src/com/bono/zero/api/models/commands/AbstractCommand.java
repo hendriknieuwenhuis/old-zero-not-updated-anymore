@@ -59,6 +59,10 @@ public abstract class AbstractCommand<T> implements Command<T> {
         return command;
     }
 
+    public String[] getArgs() {
+        return args;
+    }
+
     @Override
     public void addEndpoint(Endpoint endpoint) {
         this.endpoint = endpoint;
