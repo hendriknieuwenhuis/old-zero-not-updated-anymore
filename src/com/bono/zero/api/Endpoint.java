@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Endpoint {
 
-    public static final String COMMAND_LIST_OK_BEGIN = "command_list_ok_begin";
+    public static final String COMMAND_LIST_OK_BEGIN = "command_list_begin";
     public static final String COMMAND_LIST_END = "command_list_end";
 
     private String host;
@@ -159,8 +159,7 @@ public class Endpoint {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while ((line = reader.readLine()) != null) {
 
-                // print.
-                //System.out.printf("%s: %s\n", getClass().getName(), line);
+
 
                 if (line.equals("OK") || line.startsWith("ACK")) {
                     break;
@@ -189,51 +188,19 @@ public class Endpoint {
                 connect();
                 writer = socket.getOutputStream();
 
-                //byte[] list = null;
-                //List<Byte> byteList = new ArrayList<>();
-                String args = null;
+                String send = "";
 
-                // execute.
-                // needs socket implementation in while loop.
-
-                // TODO DIT MOET IN BYTES COMMAND.GETCOMMANDBYTES().
                 for (com.bono.zero.api.models.commands.Command command : commands) {
-                    String arg = null;
-                    if (((AbstractCommand)command).getArgs() != null) {
-
-                        arg = Arrays.toString(((AbstractCommand) command).getArgs());
-                        arg = arg.substring(1, (arg.length() - 1));
-                        args = args + command.getCommandString() + arg + File.separator;
-
-
-                    } else {
-                        if (command.getCommandString().equals(COMMAND_LIST_OK_BEGIN)) {
-                            if (args != null) {
-                                args = command.getCommandString() + File.separator + args;
-                            } else {
-                                args = command.getCommandString() + File.separator;
-                            }
-                        } else if (command.getCommandString().equals(COMMAND_LIST_END)) {
-                            args = args + command.getCommandString();
-                        }
-                    }
-
-
-
+                    send = send + new String(command.getCommandBytes());
                 }
-                args += "\n";
-                System.out.println(args);
-                writer(args.getBytes());
+                writer(send.getBytes("utf-8"));
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while ((line = reader.readLine()) != null) {
 
-                    // print.
-                    //System.out.printf("%s: %s\n", getClass().getName(), line);
+                    if (line.equals("OK") || line.startsWith("ACK")) {
+                        break;
+                    }
 
-                    //if (line.equals("OK") || line.startsWith("ACK")) {
-                    //    break;
-                    //}
-                    System.out.println(line);
                 }
 
             } else {
@@ -248,12 +215,10 @@ public class Endpoint {
 
     private void connect() throws IOException {
         SocketAddress address = new InetSocketAddress(host, port);
-
         socket = new Socket();
         socket.connect(address);
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         version = reader.readLine();
-
     }
 
     private void writer(byte[] bytes) throws IOException {
@@ -304,5 +269,21 @@ public class Endpoint {
         this.password = password;
     }
 
+    private class DynamicBytes {
+
+        private byte[] elements = new byte[1];
+
+
+
+        public void addElements(byte[] elements) {
+            byte[] newElements = new byte[(this.elements.length + elements.length)];
+            System.arraycopy(elements, 0, newElements, this.elements.length, elements.length);
+            this.elements = newElements;
+        }
+
+        public byte[] getElements() {
+            return elements;
+        }
+    }
 
 }
