@@ -51,6 +51,11 @@ public class ServerStatus {
         status = new Status();
     }
 
+    public ServerStatus(List<String> status) {
+        this();
+        setStatus(status);
+    }
+
 
 
     /*

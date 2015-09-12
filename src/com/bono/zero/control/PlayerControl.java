@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
@@ -38,6 +39,12 @@ public class PlayerControl  {
 
     private PlayerExecutor executor;
 
+    private ExecutorService executorService;
+
+    private String host;
+
+    private int port;
+
     // listener for the buttons in gui.
     @Deprecated
     private ActionListener buttonsListener = new ButtonsListener();
@@ -55,6 +62,13 @@ public class PlayerControl  {
     private Property stateProperty;
 
     public PlayerControl() {}
+
+    public PlayerControl(String host, int port, ExecutorService executorService, ServerStatus serverStatus) {
+        this.host = host;
+        this.port = port;
+        this.executorService = executorService;
+        this.serverStatus = serverStatus;
+    }
 
 
 
@@ -82,7 +96,7 @@ public class PlayerControl  {
     public ActionListener getPreviousListener() {
         return actionEvent -> {
 
-            executor.addCommand(new ExecuteCommand(PlayerProperties.PREVIOUS));
+            //executor.addCommand(new ExecuteCommand(PlayerProperties.PREVIOUS));
             /*
             Runnable runnable = () -> {
                 /*
