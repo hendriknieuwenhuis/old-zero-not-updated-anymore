@@ -1,5 +1,7 @@
 package com.bono.zero.control;
 
+import com.bono.zero.ServerProperties;
+import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.models.Property;
 import com.bono.zero.api.ExecuteCommand;
@@ -12,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -81,6 +84,10 @@ public class PlayerControl  {
 
     public void setPlayerView(PlayerView playerView) {
         this.playerView = playerView;
+        this.playerView.getButton("previous").addActionListener(getPreviousListener());
+        this.playerView.getButton("stop").addActionListener(getStopListener());
+        this.playerView.getButton("play").addActionListener(getPlayListener());
+        this.playerView.getButton("next").addActionListener(getNextListener());
     }
 
     public PlayerView getPlayerView() {
@@ -95,41 +102,34 @@ public class PlayerControl  {
 
     public ActionListener getPreviousListener() {
         return actionEvent -> {
-
-            //executor.addCommand(new ExecuteCommand(PlayerProperties.PREVIOUS));
-            /*
             Runnable runnable = () -> {
-                /*
+                String reply = null;
+                ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.PREVIOUS);
+                executeCommand.addEndpoint(new Endpoint(host, port));
                 try {
-                    player.previous();
-                } catch (IOException io) {
-                    io.printStackTrace();
-                }*/
-
-            };/*
-            new Thread(runnable).start();
-        };*/
-
+                    reply = executeCommand.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();;
+                }
+            };
+            executorService.execute(runnable);
+        };
     }
 
     public ActionListener getStopListener() {
         return actionEvent -> {
-
-            executor.addCommand(new ExecuteCommand(PlayerProperties.STOP));
-
-            /*
             Runnable runnable = () -> {
+                String reply = null;
+                ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.STOP);
+                executeCommand.addEndpoint(new Endpoint(host, port));
                 try {
-                    player.stop();
-                } catch (IOException io) {
-                    io.printStackTrace();
+                    reply = executeCommand.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();;
                 }
-
             };
-            new Thread(runnable).start();
-            */
+            executorService.execute(runnable);
         };
-
     }
 
     public ActionListener getPlayListener() {
@@ -168,19 +168,60 @@ public class PlayerControl  {
             // 'pause {1}' command is given,
             // to pause the player.
             if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PLAY)) {
-
-                executor.addCommand(new ExecuteCommand(PlayerProperties.PAUSE, "1"));
-
+                Runnable runnable = () -> {
+                    String reply = null;
+                    ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.PAUSE, "1");
+                    executeCommand.addEndpoint(new Endpoint(host, port));
+                    try {
+                        reply = executeCommand.execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();;
+                    }
+                };
+                executorService.execute(runnable);
             } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PAUSE)) {
-
-                executor.addCommand(new ExecuteCommand(PlayerProperties.PAUSE, "0"));
-
+                Runnable runnable = () -> {
+                    String reply = null;
+                    ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.PAUSE, "0");
+                    executeCommand.addEndpoint(new Endpoint(host, port));
+                    try {
+                        reply = executeCommand.execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();;
+                    }
+                };
+                executorService.execute(runnable);
             } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.STOP)) {
-
-                executor.addCommand(new ExecuteCommand(PlayerProperties.PLAY));
+                Runnable runnable = () -> {
+                    String reply = null;
+                    ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.PLAY);
+                    executeCommand.addEndpoint(new Endpoint(host, port));
+                    try {
+                        reply = executeCommand.execute();
+                    } catch (IOException e) {
+                        e.printStackTrace();;
+                    }
+                };
+                executorService.execute(runnable);
             }
         };
 
+    }
+
+    public ActionListener getNextListener() {
+        return ActionEvent -> {
+            Runnable runnable = () -> {
+                String reply = null;
+                ExecuteCommand executeCommand = new ExecuteCommand(PlayerProperties.NEXT);
+                executeCommand.addEndpoint(new Endpoint(host, port));
+                try {
+                    reply = executeCommand.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();;
+                }
+            };
+            executorService.execute(runnable);
+        };
     }
 
 

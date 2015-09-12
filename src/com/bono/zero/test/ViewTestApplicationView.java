@@ -7,10 +7,7 @@ import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.models.PlaylistTableModel;
 import com.bono.zero.api.properties.PlaylistProperties;
-import com.bono.zero.control.FolderControl;
-import com.bono.zero.control.Idle;
-import com.bono.zero.control.PlayerExecutor;
-import com.bono.zero.control.PlaylistControl;
+import com.bono.zero.control.*;
 import com.bono.zero.model.Directory;
 import com.bono.zero.view.*;
 
@@ -23,6 +20,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by hendriknieuwenhuis on 06/09/15.
@@ -50,7 +49,9 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private ServerStatus serverStatus;
 
+    private PlayerControl playerControl;
 
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public ViewTestApplicationView() {
         initModels();
@@ -80,8 +81,15 @@ public class ViewTestApplicationView extends WindowAdapter {
             e.printStackTrace();
         }
         // create Playlist.
-        playlist = new Playlist();
-        playlist.populate(entry);
+        playlist = new Playlist(entry);
+
+        entry = null;
+        try {
+            entry = endpoint.sendRequest(new RequestCommand(ServerProperties.STATUS));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        serverStatus = new ServerStatus(entry);
 
         String[] columnNames = {"", "title", "artist"};
         playlistTableModel = new PlaylistTableModel(null, columnNames);
@@ -118,7 +126,7 @@ public class ViewTestApplicationView extends WindowAdapter {
         playlistControl = new PlaylistControl(playerExecutor, playlist, playlistTableModel);
         playlist.addPlaylistListener(playlistControl.getPlaylistListener());
 
-        serverStatus = new ServerStatus();
+        playerControl = new PlayerControl(HOST, PORT, executorService, serverStatus);
 
         // thread idle.
         Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
@@ -142,6 +150,7 @@ public class ViewTestApplicationView extends WindowAdapter {
             folderControl.setFolderView(applicationView.getFolderView());
             playlistControl.setPlaylistView(applicationView.getPlaylistView());
             playlistControl.setColumnWidth(0);
+            playerControl.setPlayerView(applicationView.getPlayerView());
             applicationView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             applicationView.pack();
             applicationView.setVisible(true);
