@@ -120,6 +120,7 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         serverStatus = new ServerStatus();
 
+        // thread idle.
         Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
         Thread thread = new Thread(idle);
         thread.start();
