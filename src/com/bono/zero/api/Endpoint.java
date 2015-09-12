@@ -97,14 +97,12 @@ public class Endpoint {
                 }
                 response.add(line);
             }
-
         } catch (IOException e) {
             new IOException("check connection settings");
         } finally {
             socket.close();
         }
         return response;
-
     }
 
 
@@ -176,6 +174,34 @@ public class Endpoint {
     }
 
     /*
+    private class DynamicBytes creates an object that
+    holds a byte array, a new byte array can be added
+    to that array by the addBytes method.
+    So in case of a list of commands this class
+    can create the commands list as one array of bytes
+    to be send to the server.
+     */
+    private class DynamicBytes {
+
+        private byte[] data;
+
+        public DynamicBytes() {
+            data = new byte[0];
+        }
+
+        public void addBytes(byte[] value) {
+            byte[] temp = new byte[(data.length + value.length)];
+            System.arraycopy(data, 0, temp, 0, data.length);
+            System.arraycopy(value, 0, temp, data.length, value.length);
+            data = temp;
+        }
+
+        public byte[] getBytes() {
+            return data;
+        }
+    }
+
+    /*
     The list must be converted to one line of bytes to send.
      */
     public String sendCommand(List<com.bono.zero.api.models.commands.Command> commands) throws IOException, NullPointerException {
@@ -188,12 +214,14 @@ public class Endpoint {
                 connect();
                 writer = socket.getOutputStream();
 
+                DynamicBytes dynamicBytes = new DynamicBytes();
                 String send = "";
 
                 for (com.bono.zero.api.models.commands.Command command : commands) {
-                    send = send + new String(command.getCommandBytes());
+                    //send = send + new String(command.getCommandBytes());
+                    dynamicBytes.addBytes(command.getCommandBytes());
                 }
-                writer(send.getBytes("utf-8"));
+                writer(dynamicBytes.getBytes());
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while ((line = reader.readLine()) != null) {
 
@@ -269,21 +297,6 @@ public class Endpoint {
         this.password = password;
     }
 
-    private class DynamicBytes {
 
-        private byte[] elements = new byte[1];
-
-
-
-        public void addElements(byte[] elements) {
-            byte[] newElements = new byte[(this.elements.length + elements.length)];
-            System.arraycopy(elements, 0, newElements, this.elements.length, elements.length);
-            this.elements = newElements;
-        }
-
-        public byte[] getElements() {
-            return elements;
-        }
-    }
 
 }

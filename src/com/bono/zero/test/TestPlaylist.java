@@ -45,7 +45,7 @@ public class TestPlaylist {
         endpoint.setHost("192.168.2.2");
         endpoint.setPort(6600);
         serverStatus = new ServerStatus();
-        new Thread(new Idle(endpoint.getHost(), endpoint.getPort(), serverStatus)).start();
+        new Thread(new Idle(endpoint.getHost(), endpoint.getPort(), serverStatus, playlist)).start();
         playerExecutor = new PlayerExecutor(endpoint);
         new Thread(playerExecutor).start();
         List<String> request = null;

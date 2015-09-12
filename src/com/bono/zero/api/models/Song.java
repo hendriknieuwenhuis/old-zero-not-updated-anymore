@@ -5,6 +5,13 @@ package com.bono.zero.api.models;
  */
 public class Song {
 
+    /*
+    TODO String vervangen met Property.
+    TODO getFile return fileProperty.getValue().
+    TODO setFile(String value) fileProperty.setValue(value).
+    TODO getFilePropertyName() return fileProperty.getName().
+     */
+
     private String file;
     private String lastModified;
     private String title;

@@ -75,7 +75,7 @@ public class ApiTestPlayerExecutor {
         }
 
         // start the idle thread to listen for changes.
-        Idle idle = new Idle(host, port, serverStatus);
+        Idle idle = new Idle(host, port, serverStatus, null);
         Thread idleThread = new Thread(idle);
         idleThread.start();
 

@@ -2,6 +2,9 @@ package com.bono.zero.control;
 
 import com.bono.zero.api.Playlist;
 import com.bono.zero.api.RequestCommand;
+import com.bono.zero.api.events.PlaylistEvent;
+import com.bono.zero.api.events.PlaylistListener;
+import com.bono.zero.api.models.PlaylistTableModel;
 import com.bono.zero.api.models.Song;
 import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.view.PlaylistView;
@@ -11,6 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
@@ -26,13 +30,16 @@ public class PlaylistControl {
 
     private Playlist playlist;
 
+    private PlaylistTableModel playlistTableModel;
+
     private PlayerExecutor playerExecutor;
 
     public PlaylistControl() {}
 
-    public PlaylistControl(PlayerExecutor playerExecutor, Playlist playlist) {
+    public PlaylistControl(PlayerExecutor playerExecutor, Playlist playlist, PlaylistTableModel playlistTableModel) {
         this.playerExecutor = playerExecutor;
         this.playlist = playlist;
+        this.playlistTableModel = playlistTableModel;
     }
 
     public void setColumnWidth(int column) {
@@ -72,6 +79,12 @@ public class PlaylistControl {
 
     public void setPlayerExecutor(PlayerExecutor playerExecutor) {
         this.playerExecutor = playerExecutor;
+    }
+
+    public PlaylistListener getPlaylistListener() {
+        return (PlaylistEvent event) -> {
+            playlistTableModel.setPlaylistTableModel(((Playlist) event.getSource()));
+        };
     }
 
     public ListSelectionListener getListSelectionListener() {

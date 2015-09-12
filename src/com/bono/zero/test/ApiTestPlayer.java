@@ -143,7 +143,7 @@ public class ApiTestPlayer {
             serverStatus = new ServerStatus();
             serverStatus.getStatus().getStateProperty().setPropertyChangeListener(getStateListener());
 
-            idle = new Idle(HOST, PORT, serverStatus);
+            idle = new Idle(HOST, PORT, serverStatus, null);
             Thread threadIdle = new Thread(idle);
             threadIdle.start();
 

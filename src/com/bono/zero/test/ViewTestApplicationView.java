@@ -4,8 +4,11 @@ import com.bono.zero.ServerProperties;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
 import com.bono.zero.api.RequestCommand;
+import com.bono.zero.api.ServerStatus;
+import com.bono.zero.api.models.PlaylistTableModel;
 import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.control.FolderControl;
+import com.bono.zero.control.Idle;
 import com.bono.zero.control.PlayerExecutor;
 import com.bono.zero.control.PlaylistControl;
 import com.bono.zero.model.Directory;
@@ -41,9 +44,11 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private Playlist playlist;
 
-    private DefaultTableModel tableModel;
+    private PlaylistTableModel playlistTableModel;
 
     private Thread playerExecutorThread;
+
+    private ServerStatus serverStatus;
 
 
 
@@ -75,24 +80,21 @@ public class ViewTestApplicationView extends WindowAdapter {
             e.printStackTrace();
         }
         // create Playlist.
-        playlist = new Playlist(entry);
+        playlist = new Playlist();
+        playlist.populate(entry);
 
         String[] columnNames = {"", "title", "artist"};
-        tableModel = new DefaultTableModel(null, columnNames);
+        playlistTableModel = new PlaylistTableModel(null, columnNames);
 
 
 
 
-        tableModel.setColumnCount(3);
-        tableModel.setRowCount(playlist.getList().size());
+        playlistTableModel.setColumnCount(3);
+        //playlistTableModel.setRowCount(playlist.getList().size());
 
-        System.out.println(tableModel.getRowCount());
+        System.out.println(playlistTableModel.getRowCount());
 
-        for (int i = 0; i < playlist.getList().size(); i++) {
-            tableModel.setValueAt(playlist.getList().get(i).getPos(), i, 0);
-            tableModel.setValueAt(playlist.getList().get(i).getTitle(), i, 1);
-            tableModel.setValueAt(playlist.getList().get(i).getArtist(), i, 2);
-        }
+        playlistTableModel.setPlaylistTableModel(playlist);
 
     }
 
@@ -113,7 +115,15 @@ public class ViewTestApplicationView extends WindowAdapter {
         folderControl = new FolderControl(directory, playerExecutor);
 
         // create PlaylistControl.
-        playlistControl = new PlaylistControl(playerExecutor, playlist);
+        playlistControl = new PlaylistControl(playerExecutor, playlist, playlistTableModel);
+        playlist.addPlaylistListener(playlistControl.getPlaylistListener());
+
+        serverStatus = new ServerStatus();
+
+        Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
+        Thread thread = new Thread(idle);
+        thread.start();
+
 
 
     }
@@ -126,7 +136,7 @@ public class ViewTestApplicationView extends WindowAdapter {
             applicationView = new ApplicationView();
             applicationView.addWindowListener(this);
             applicationView.getFolderView().setModel(folderControl.getDirectory().getModel());
-            applicationView.getPlaylistView().setModel(tableModel);
+            applicationView.getPlaylistView().setModel(playlistTableModel);
             applicationView.getPlaylistView().getColumnModel().getColumn(0).setPreferredWidth(5);
             folderControl.setFolderView(applicationView.getFolderView());
             playlistControl.setPlaylistView(applicationView.getPlaylistView());
