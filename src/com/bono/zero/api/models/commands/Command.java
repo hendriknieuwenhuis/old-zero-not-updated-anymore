@@ -8,15 +8,13 @@ import java.util.List;
 /**
  * Created by hendriknieuwenhuis on 14/08/15.
  */
-public interface Command<T> {
-
-    void addEndpoint(Endpoint endpoint);
+public interface Command {
 
     byte[] getCommandBytes();
 
     String getCommandString();
 
-    T execute() throws IOException;
+    //T execute() throws IOException;
 
 
 

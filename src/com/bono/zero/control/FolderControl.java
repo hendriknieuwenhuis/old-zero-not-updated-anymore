@@ -137,7 +137,7 @@ public class FolderControl {
                 String pathString = makeURI(pathArray[0]);
                 if (pathString != null) {
                     try {
-                        reply = endpoint.sendCommand(new ExecuteCommand(PlaylistProperties.ADD, pathString));
+                        reply = new ExecuteCommand(endpoint, PlaylistProperties.ADD, pathString).execute();
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
@@ -148,7 +148,7 @@ public class FolderControl {
             } else if (pathArray.length > 1) {
                 System.out.println("More than one");
                 List<Command> commands = new ArrayList<>();
-                commands.add(new ExecuteCommand(Endpoint.COMMAND_LIST_OK_BEGIN));
+                commands.add(new ExecuteCommand(endpoint, Endpoint.COMMAND_LIST_OK_BEGIN));
                 for (TreePath treePath : pathArray) {
                     String pathString = makeURI(treePath);
                     //System.out.println(pathString);

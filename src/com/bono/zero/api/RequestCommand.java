@@ -1,6 +1,6 @@
 package com.bono.zero.api;
 
-import com.bono.zero.api.models.commands.AbstractCommand;
+import com.bono.zero.api.models.commands.ServerCommand;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by hendriknieuwenhuis on 29/08/15.
  */
-public class RequestCommand extends AbstractCommand<List<String>> {
+public class RequestCommand extends ServerCommand<List<String>> {
 
     // Command without arguments
     public RequestCommand(String command) {

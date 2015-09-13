@@ -127,7 +127,7 @@ public class ViewTestApplicationView extends WindowAdapter {
         playlist.addPlaylistListener(playlistControl.getPlaylistListener());
 
         playerControl = new PlayerControl(HOST, PORT, executorService, serverStatus);
-
+        serverStatus.getStatus().getStateProperty().addPropertyListeners(playerControl.getStatePropertyListener());
         // thread idle.
         Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
         Thread thread = new Thread(idle);

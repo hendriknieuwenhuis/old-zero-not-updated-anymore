@@ -10,23 +10,21 @@ import java.util.List;
 /**
  * Created by hendriknieuwenhuis on 15/08/15.
  */
-public abstract class AbstractCommand<T> implements Command<T> {
+public class ServerCommand implements Command {
 
     protected String command;
     protected String[] args;
 
-    protected Endpoint endpoint;
-
-    public AbstractCommand(String command) {
+    public ServerCommand(String command) {
         this.command = command;
     }
 
-    public AbstractCommand(String command, String arg) {
+    public ServerCommand(String command, String arg) {
         this.command = command;
         this.args = new String[]{arg};
     }
 
-    public AbstractCommand(String command, String[] args) {
+    public ServerCommand(String command, String[] args) {
         this.command = command;
         this.args = args;
     }
@@ -63,17 +61,10 @@ public abstract class AbstractCommand<T> implements Command<T> {
         return args;
     }
 
-    @Override
-    public void addEndpoint(Endpoint endpoint) {
-        this.endpoint = endpoint;
-    }
-
-    public abstract T execute() throws IOException;
-
 
     @Override
     public String toString() {
-        return "AbstractCommand{" +
+        return "ServerCommand{" +
                 "args=" + Arrays.toString(args) +
                 ", request='" + command + '\'' +
                 '}';

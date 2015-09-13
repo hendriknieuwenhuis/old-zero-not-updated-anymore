@@ -1,29 +1,29 @@
 package com.bono.zero.api;
 
-import com.bono.zero.api.models.commands.AbstractCommand;
+import com.bono.zero.api.models.commands.ServerCommand;
 
 import java.io.IOException;
 
 /**
  * Created by hendriknieuwenhuis on 15/08/15.
  */
-public class ExecuteCommand extends AbstractCommand<String> {
+public class ExecuteCommand extends ServerCommand<String> {
 
     // Command without arguments
-    public ExecuteCommand(String command) {
-        super(command);
+    public ExecuteCommand(Endpoint endpoint, String command) {
+        super(endpoint, command);
 
     }
 
     // Command with single argument
-    public ExecuteCommand(String command, String arg) {
-        super(command, arg);
+    public ExecuteCommand(Endpoint endpoint, String command, String arg) {
+        super(endpoint, command, arg);
 
     }
 
     // Command with multiple arguments
-    public ExecuteCommand(String command, String[] args) {
-        super(command, args);
+    public ExecuteCommand(Endpoint endpoint, String command, String[] args) {
+        super(endpoint, command, args);
 
     }
 
