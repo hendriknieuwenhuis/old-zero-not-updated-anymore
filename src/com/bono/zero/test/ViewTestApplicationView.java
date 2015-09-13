@@ -3,22 +3,18 @@ package com.bono.zero.test;
 import com.bono.zero.ServerProperties;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
-import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.models.PlaylistTableModel;
+import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.control.*;
 import com.bono.zero.model.Directory;
 import com.bono.zero.view.*;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,13 +35,9 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private PlaylistControl playlistControl;
 
-    private PlayerExecutor playerExecutor;
-
     private Playlist playlist;
 
     private PlaylistTableModel playlistTableModel;
-
-    private Thread playerExecutorThread;
 
     private ServerStatus serverStatus;
 
@@ -66,7 +58,7 @@ public class ViewTestApplicationView extends WindowAdapter {
         Endpoint endpoint = new Endpoint(HOST, PORT);
         List<String> entry = null;
         try {
-            entry = endpoint.sendRequest(new RequestCommand(ServerProperties.LIST_ALL));
+            entry = endpoint.sendRequest(new ServerCommand(ServerProperties.LIST_ALL));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +68,7 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         // get the playlist.
         try {
-            entry = endpoint.sendRequest(new RequestCommand(PlaylistProperties.PLAYLISTINFO));
+            entry = endpoint.sendRequest(new ServerCommand(PlaylistProperties.PLAYLISTINFO));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,7 +77,7 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         entry = null;
         try {
-            entry = endpoint.sendRequest(new RequestCommand(ServerProperties.STATUS));
+            entry = endpoint.sendRequest(new ServerCommand(ServerProperties.STATUS));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,20 +102,10 @@ public class ViewTestApplicationView extends WindowAdapter {
     Initiate the controllers folderControl, playerExecutor & playlistControl.
      */
     private void initControllers() {
-
-
-
-
-        // create PlayerExecutor.
-        playerExecutor = new PlayerExecutor(new Endpoint(HOST, PORT));
-        playerExecutorThread = new Thread(playerExecutor);
-
-        playerExecutorThread.start();
-
-        folderControl = new FolderControl(directory, playerExecutor);
+        folderControl = new FolderControl(directory);
 
         // create PlaylistControl.
-        playlistControl = new PlaylistControl(playerExecutor, playlist, playlistTableModel);
+        playlistControl = new PlaylistControl(HOST, PORT, executorService, playlist, playlistTableModel);
         playlist.addPlaylistListener(playlistControl.getPlaylistListener());
 
         playerControl = new PlayerControl(HOST, PORT, executorService, serverStatus);
@@ -132,9 +114,6 @@ public class ViewTestApplicationView extends WindowAdapter {
         Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
         Thread thread = new Thread(idle);
         thread.start();
-
-
-
     }
 
     /*

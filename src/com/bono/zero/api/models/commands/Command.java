@@ -14,10 +14,4 @@ public interface Command {
 
     String getCommandString();
 
-    //T execute() throws IOException;
-
-
-
-
-
 }

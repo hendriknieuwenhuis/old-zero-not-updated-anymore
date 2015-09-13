@@ -1,29 +1,25 @@
 package com.bono.zero.control;
 
-import com.bono.zero.ServerProperties;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.events.PropertyEvent;
 import com.bono.zero.api.events.PropertyListener;
+import com.bono.zero.api.models.Control;
 import com.bono.zero.api.models.Property;
-import com.bono.zero.api.ExecuteCommand;
+import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlayerProperties;
-import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.laf.BonoIconFactory;
 import com.bono.zero.view.PlayerView;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 /**
  * Created by hendriknieuwenhuis on 27/07/15.
  */
-public class PlayerControl  {
+public class PlayerControl extends Control {
 
     /*
     the panel containing the graphical
@@ -31,40 +27,16 @@ public class PlayerControl  {
      */
     private PlayerView playerView;
 
-    private String state;
-
-    private PlayerExecutor executor;
-
-    private ExecutorService executorService;
-
-    private String host;
-
-    private int port;
-
-
     private PropertyListener statePropertyListener;
 
     private ServerStatus serverStatus;
 
-
-
     public PlayerControl() {}
 
     public PlayerControl(String host, int port, ExecutorService executorService, ServerStatus serverStatus) {
-        this.host = host;
-        this.port = port;
-        this.executorService = executorService;
+        super(host, port, executorService);
         this.serverStatus = serverStatus;
     }
-
-
-
-    public PlayerControl(PlayerExecutor executor, ServerStatus serverStatus) {
-        this.serverStatus = serverStatus;
-        this.executor = executor;
-    }
-
-
 
     public void setPlayerView(PlayerView playerView) {
         this.playerView = playerView;
@@ -111,29 +83,23 @@ public class PlayerControl  {
 
     private void executeCommand(String command, String arg) {
         Runnable runnable = () -> {
+            Endpoint endpoint = new Endpoint(host, port);
             String reply = null;
             try {
-                reply = new ExecuteCommand(new Endpoint(host, port), command, arg).execute();
+                reply = endpoint.sendCommand(new ServerCommand(command, arg));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            // print.
+            System.out.println(reply);
+            //
         };
         executorService.execute(runnable);
     }
 
     public ActionListener getNextListener() {
         return ActionEvent -> {
-            Runnable runnable = () -> {
-                String reply = null;
-                ExecuteCommand executeCommand = new ExecuteCommand(new Endpoint(host, port), PlayerProperties.NEXT);
-                executeCommand.addEndpoint(new Endpoint(host, port));
-                try {
-                    reply = executeCommand.execute();
-                } catch (IOException e) {
-                    e.printStackTrace();;
-                }
-            };
-            executorService.execute(runnable);
+            executeCommand(PlayerProperties.NEXT, null);
         };
     }
 
@@ -161,9 +127,6 @@ public class PlayerControl  {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-
-                            //System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
-
                             playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPauseButtonIcon());
                         }
                     }); // END EDT
@@ -173,9 +136,6 @@ public class PlayerControl  {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-
-                            //System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
-
                             playerView.getButton(PlayerProperties.PLAY).setIcon(BonoIconFactory.getPlayButtonIcon());
                         }
                     }); // END EDT

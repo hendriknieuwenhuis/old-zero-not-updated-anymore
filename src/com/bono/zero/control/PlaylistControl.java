@@ -1,28 +1,27 @@
 package com.bono.zero.control;
 
+import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.Playlist;
-import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.events.PlaylistEvent;
 import com.bono.zero.api.events.PlaylistListener;
+import com.bono.zero.api.models.Control;
 import com.bono.zero.api.models.PlaylistTableModel;
 import com.bono.zero.api.models.Song;
-import com.bono.zero.api.properties.PlaylistProperties;
-import com.bono.zero.view.PlaylistView;
+import com.bono.zero.api.models.commands.ServerCommand;
+import com.bono.zero.api.properties.PlayerProperties;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by hendriknieuwenhuis on 05/09/15.
  */
-public class PlaylistControl {
+public class PlaylistControl extends Control {
 
     private int row;
 
@@ -32,12 +31,10 @@ public class PlaylistControl {
 
     private PlaylistTableModel playlistTableModel;
 
-    private PlayerExecutor playerExecutor;
-
     public PlaylistControl() {}
 
-    public PlaylistControl(PlayerExecutor playerExecutor, Playlist playlist, PlaylistTableModel playlistTableModel) {
-        this.playerExecutor = playerExecutor;
+    public PlaylistControl(String host, int port, ExecutorService executorService, Playlist playlist, PlaylistTableModel playlistTableModel) {
+        super(host, port, executorService);
         this.playlist = playlist;
         this.playlistTableModel = playlistTableModel;
     }
@@ -73,13 +70,6 @@ public class PlaylistControl {
         this.playlist = playlist;
     }
 
-    public PlayerExecutor getPlayerExecutor() {
-        return playerExecutor;
-    }
-
-    public void setPlayerExecutor(PlayerExecutor playerExecutor) {
-        this.playerExecutor = playerExecutor;
-    }
 
     public PlaylistListener getPlaylistListener() {
         return (PlaylistEvent event) -> {
@@ -96,8 +86,19 @@ public class PlaylistControl {
                 if (e.getValueIsAdjusting()) {
                     ListSelectionModel listSelectionModel = (ListSelectionModel)e.getSource();
                     Song song = playlist.getList().get(listSelectionModel.getAnchorSelectionIndex());
-                    playerExecutor.playid(song.getId());
+                    //playerExecutor.playid(song.getId());
 
+                    Runnable runnable = () -> {
+                        String reply = null;
+                        Endpoint endpoint = new Endpoint(host, port);
+                        try {
+                            reply = endpoint.sendCommand(new ServerCommand(PlayerProperties.PLAYID, song.getId()));
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+                        System.out.println(reply);
+                    };
+                executorService.execute(runnable);
                 }
             }
         };

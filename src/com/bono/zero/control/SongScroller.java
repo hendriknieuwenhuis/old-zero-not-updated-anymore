@@ -1,10 +1,10 @@
 package com.bono.zero.control;
 
 
+import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.events.PropertyListener;
 import com.bono.zero.api.models.Property;
-import com.bono.zero.api.ExecuteCommand;
-import com.bono.zero.api.models.commands.Executor;
+import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlayerProperties;
 import com.bono.zero.model.ScrollTime;
 import com.bono.zero.view.ScrollView;
@@ -14,6 +14,8 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 
 /**
@@ -26,13 +28,17 @@ import java.awt.event.MouseListener;
  */
 public class SongScroller {
 
+    String host;
+
+    int port;
+
     // the scrollview depicting the scroller.
     private ScrollView scrollView;
 
     // initiate with zero's.
     private ScrollTime scrollTime = new ScrollTime("0:0");
 
-    private Executor<String> executor;
+
 
     private Timer timer;
 
@@ -47,11 +53,19 @@ public class SongScroller {
     // holding the properties given by the listeners.
     private Property<String>[] propertiesArray = new Property[2];
 
+    private ExecutorService executorService;
 
 
-    public SongScroller(Executor<String> executor, ScrollView scrollView) {
+
+    public SongScroller(ExecutorService executorService, ScrollView scrollView) {
         this.scrollView = scrollView;
-        this.executor = executor;
+        this.executorService = executorService;
+    }
+
+    public SongScroller(String host, int port, ExecutorService executorService) {
+        this.host = host;
+        this.port = port;
+        this.executorService = executorService;
     }
 
     public void setScrollView(ScrollView scrollView) {
@@ -81,8 +95,16 @@ public class SongScroller {
                     JSlider slider = (JSlider) e.getSource();
 
                     if (!slider.getValueIsAdjusting()) {
-
-                        executor.addCommand(new ExecuteCommand(PlayerProperties.SEEKCUR, Integer.toString(slider.getValue())));
+                        Runnable runnable = () -> {
+                            Endpoint endpoint = new Endpoint(host, port);
+                            String reply = null;
+                            try {
+                                reply = endpoint.sendCommand(new ServerCommand(PlayerProperties.SEEKCUR, Integer.toString(slider.getValue())));
+                            } catch (IOException ioe) {
+                                ioe.printStackTrace();
+                            }
+                        };
+                        executorService.execute(runnable);
                     }
                 }
             });

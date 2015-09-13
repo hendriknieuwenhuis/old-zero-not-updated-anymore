@@ -1,18 +1,14 @@
 package com.bono.zero.control;
 
 import com.bono.zero.api.Endpoint;
-import com.bono.zero.api.ExecuteCommand;
-import com.bono.zero.api.Playlist;
+import com.bono.zero.api.models.Control;
 import com.bono.zero.api.models.commands.Command;
+import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.model.Directory;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,11 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by hendriknieuwenhuis on 06/09/15.
  */
-public class FolderControl {
+public class FolderControl extends Control {
 
     //private FolderView folderView;
     private JTree folderView;
@@ -34,19 +31,20 @@ public class FolderControl {
 
     private Directory directory;
 
-    private PlayerExecutor playerExecutor;
-
     public FolderControl() {}
 
-    public FolderControl(Directory directory, PlayerExecutor playerExecutor) {
+    public FolderControl(Directory directory) {
         this.directory = directory;
-        this.playerExecutor = playerExecutor;
     }
 
     @Deprecated
     public FolderControl(Directory directory, JTree folderView) {
         this.directory = directory;
         setFolderView(folderView);
+    }
+
+    public FolderControl(String host, int port, ExecutorService executorService, Directory directory) {
+        super(host, port, executorService);
     }
 
     public void updateDirectory(List<String> entry) {
@@ -129,46 +127,49 @@ public class FolderControl {
         public void actionPerformed(ActionEvent e) {
             //TreePath path = folderView.getSelectionPath();
             TreePath[] pathArray = folderView.getSelectionPaths();
-            Endpoint endpoint = new Endpoint("192.168.2.2", 6600);
-            String reply = null;
+            Endpoint endpoint = new Endpoint(host, port);
+
 
             // single selected path.
             if (pathArray.length == 1) {
                 String pathString = makeURI(pathArray[0]);
                 if (pathString != null) {
-                    try {
-                        reply = new ExecuteCommand(endpoint, PlaylistProperties.ADD, pathString).execute();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
+                    Runnable runnable = () -> {
+                        String reply = null;
+                        try {
+                            reply = endpoint.sendCommand(new ServerCommand(PlaylistProperties.ADD, pathString));
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+                        System.out.println(reply);
+                    };
+                    executorService.execute(runnable);
                 }
-                System.out.println(reply);
+
 
                 // multiple selected paths.
             } else if (pathArray.length > 1) {
                 System.out.println("More than one");
                 List<Command> commands = new ArrayList<>();
-                commands.add(new ExecuteCommand(endpoint, Endpoint.COMMAND_LIST_OK_BEGIN));
+                commands.add(new ServerCommand(Endpoint.COMMAND_LIST_OK_BEGIN));
                 for (TreePath treePath : pathArray) {
                     String pathString = makeURI(treePath);
                     //System.out.println(pathString);
-                    commands.add(new ExecuteCommand(PlaylistProperties.ADD, pathString));
+                    commands.add(new ServerCommand(PlaylistProperties.ADD, pathString));
                 }
-                commands.add(new ExecuteCommand(Endpoint.COMMAND_LIST_END));
+                commands.add(new ServerCommand(Endpoint.COMMAND_LIST_END));
 
+                Runnable runnable = () -> {
+                    String reply = null;
+                    try {
+                        reply = endpoint.sendCommand(commands);
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                    System.out.println(reply);
+                };
+                executorService.execute(runnable);
 
-                try {
-                    reply = endpoint.sendCommand(commands);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                System.out.println(reply);
-
-                /*
-                for (Command command : commands) {
-                    String print = new String(command.getCommandBytes());
-                    System.out.println(print);
-                }*/
             }
         }
 
@@ -192,5 +193,7 @@ public class FolderControl {
             }
             return null;
         }
+
+
     }
 }

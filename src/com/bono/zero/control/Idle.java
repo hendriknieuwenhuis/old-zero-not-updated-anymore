@@ -1,10 +1,10 @@
 package com.bono.zero.control;
 
 import com.bono.zero.api.Playlist;
-import com.bono.zero.api.RequestCommand;
 import com.bono.zero.api.Endpoint;
 import com.bono.zero.api.ServerStatus;
 
+import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlaylistProperties;
 import com.bono.zero.api.properties.StatusProperties;
 
@@ -45,7 +45,7 @@ public class Idle implements Runnable {
             System.out.printf("%s, active: %s, %s\n", Thread.currentThread().getName(), Thread.activeCount(), getClass().getName());
             List<String> feedback = null;
             try {
-                feedback = endpointIdle.sendRequest(new RequestCommand(StatusProperties.IDLE));
+                feedback = endpointIdle.sendRequest(new ServerCommand(StatusProperties.IDLE));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -93,7 +93,7 @@ public class Idle implements Runnable {
         @Override
         public void run() {
             try {
-                serverStatus.setStatus(endpoint.sendRequest(new RequestCommand(StatusProperties.STATUS)));
+                serverStatus.setStatus(endpoint.sendRequest(new ServerCommand(StatusProperties.STATUS)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -107,7 +107,7 @@ public class Idle implements Runnable {
         @Override
         public void run() {
             try {
-                playlist.populate(endpoint.sendRequest(new RequestCommand(PlaylistProperties.PLAYLISTINFO)));
+                playlist.populate(endpoint.sendRequest(new ServerCommand(PlaylistProperties.PLAYLISTINFO)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
