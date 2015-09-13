@@ -1,11 +1,13 @@
 package com.bono.zero.control;
 
 import com.bono.zero.api.Endpoint;
+import com.bono.zero.api.Playlist;
 import com.bono.zero.api.ServerStatus;
 import com.bono.zero.api.events.PropertyEvent;
 import com.bono.zero.api.events.PropertyListener;
 import com.bono.zero.api.models.Control;
 import com.bono.zero.api.models.Property;
+import com.bono.zero.api.models.Song;
 import com.bono.zero.api.models.commands.ServerCommand;
 import com.bono.zero.api.properties.PlayerProperties;
 import com.bono.zero.laf.BonoIconFactory;
@@ -31,11 +33,14 @@ public class PlayerControl extends Control {
 
     private ServerStatus serverStatus;
 
+
+
     public PlayerControl() {}
 
     public PlayerControl(String host, int port, ExecutorService executorService, ServerStatus serverStatus) {
         super(host, port, executorService);
         this.serverStatus = serverStatus;
+
     }
 
     public void setPlayerView(PlayerView playerView) {
@@ -102,6 +107,8 @@ public class PlayerControl extends Control {
         };
         executorService.execute(runnable);
     }
+
+
 
 
 

@@ -46,4 +46,14 @@ public class SongView extends JPanel {
     public JLabel getSong() {
         return song;
     }
+
+    public void setArtist(String artist) {
+        if (artist == null) artist = "";
+        this.artist.setText("artist : " + artist);
+    }
+
+    public void setTitle(String title) {
+        if (title == null) title = "";
+        this.song.setText("title: " + title);
+    }
 }

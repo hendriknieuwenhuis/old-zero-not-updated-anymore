@@ -98,8 +98,8 @@ public class Playlist {
     /*
     Get a song, key is id of song.
      */
-    public Song getSong(String key) {
-        return playlist.get(key);
+    public Song getSong(int index) {
+        return list.get(index);
     }
 
     public int getSize() {

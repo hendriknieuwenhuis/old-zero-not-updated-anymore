@@ -58,10 +58,20 @@ public class ApplicationView extends JFrame {
 
     private void placePanels() {
         JPanel playerPanel = new JPanel();
-        playerPanel.setLayout(new FlowLayout());
-        playerPanel.add(playerView);
-        playerPanel.add(songView);
-        playerPanel.add(scrollView);
+        playerPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        playerPanel.add(playerView, c);
+        c.weightx = 1.0;
+        c.anchor = GridBagConstraints.LINE_END;
+        c.gridx = 1;
+        playerPanel.add(songView, c);
+        c.weightx = 1;
+        c.gridx = 2;
+        c.gridwidth= scrollView.getWidth();
+        playerPanel.add(scrollView, c);
         this.getContentPane().add(playerPanel, BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);

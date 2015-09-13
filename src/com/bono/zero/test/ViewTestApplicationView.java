@@ -43,6 +43,8 @@ public class ViewTestApplicationView extends WindowAdapter {
 
     private PlayerControl playerControl;
 
+    private CurrentSong currentSong;
+
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public ViewTestApplicationView() {
@@ -110,6 +112,9 @@ public class ViewTestApplicationView extends WindowAdapter {
 
         playerControl = new PlayerControl(HOST, PORT, executorService, serverStatus);
         serverStatus.getStatus().getStateProperty().addPropertyListeners(playerControl.getStatePropertyListener());
+
+        currentSong = new CurrentSong(playlist, serverStatus);
+
         // thread idle.
         Idle idle = new Idle(HOST, PORT, serverStatus, playlistControl.getPlaylist());
         Thread thread = new Thread(idle);
@@ -130,6 +135,7 @@ public class ViewTestApplicationView extends WindowAdapter {
             playlistControl.setPlaylistView(applicationView.getPlaylistView());
             playlistControl.setColumnWidth(0);
             playerControl.setPlayerView(applicationView.getPlayerView());
+            currentSong.setView(applicationView.getSongView());
             applicationView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             applicationView.pack();
             applicationView.setVisible(true);

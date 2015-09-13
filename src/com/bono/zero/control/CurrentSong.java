@@ -1,7 +1,12 @@
 package com.bono.zero.control;
 
 import com.bono.zero.api.Playlist;
+import com.bono.zero.api.ServerStatus;
+import com.bono.zero.api.events.PropertyEvent;
+import com.bono.zero.api.events.PropertyListener;
+import com.bono.zero.api.models.Control;
 import com.bono.zero.api.models.Property;
+import com.bono.zero.api.models.Song;
 import com.bono.zero.view.SongView;
 
 import javax.swing.*;
@@ -21,13 +26,18 @@ public class CurrentSong {
 
     private Playlist playlist;
 
-    public CurrentSong(Playlist playlist) {
+    private ServerStatus serverStatus;
+
+    public CurrentSong(Playlist playlist, ServerStatus serverStatus) {
         //view = new SongView();
         this.playlist = playlist;
+        this.serverStatus = serverStatus;
+        this.serverStatus.getStatus().getSongProperty().addPropertyListeners(new SongPosListener());
     }
 
     public void  setView(SongView songView) {
         view = songView;
+
     }
 
     public SongView getSongView() {
@@ -40,54 +50,21 @@ public class CurrentSong {
         return view.getSongView();
     }
 
-    public PropertyChangeListener getCurrentSongListener() {
+    private class SongPosListener implements PropertyListener {
 
-        return new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String songid = (String) evt.getNewValue();
-                String oldValue = (String) evt.getOldValue();
+        @Override
+        public void propertyChange(PropertyEvent propertyEvent) {
+            Property property = (Property) propertyEvent.getSource();
+            Song song = playlist.getSong(Integer.parseInt((String)property.getValue()));
+            String artist = song.getArtist();
+            String title = song.getTitle();
 
-                // only run if value is changed.
-                if (!songid.equals(oldValue)) {
-                    // EDT
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
-
-                            view.getArtist().setText("Artist: " + playlist.getSong(songid).getArtist());
-                            view.getSong().setText("Song: " + playlist.getSong(songid).getTitle());
-                        }
-                    }); // END EDT
-                }
+            if (view != null) {
+                SwingUtilities.invokeLater(() -> {
+                    view.setArtist(artist);
+                    view.setTitle(title);
+                });
             }
-        };
-
-        /*
-        return new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                Property property = (Property) e.getSource();
-                String songid = (String) property.getValue();
-
-                // EDT
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        System.out.printf("%s, this is the event dispatch thread: %s\n", getClass().getName(), SwingUtilities.isEventDispatchThread());
-
-                        view.getArtist().setText("Artist: " + playlist.getSong(songid).getArtist());
-                        view.getSong().setText("Song: " + playlist.getSong(songid).getTitle());
-                    }
-                }); // END EDT
-
-            }
-        };*/
-
+        }
     }
-
-
 }
