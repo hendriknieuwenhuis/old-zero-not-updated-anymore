@@ -53,13 +53,13 @@ public class PlayerControl extends Control {
 
     public ActionListener getPreviousListener() {
         return actionEvent -> {
-            executeCommand(PlayerProperties.PREVIOUS, null);
+            executeCommand(new ServerCommand(PlayerProperties.PREVIOUS));
         };
     }
 
     public ActionListener getStopListener() {
         return actionEvent -> {
-            executeCommand(PlayerProperties.STOP, null);
+            executeCommand(new ServerCommand(PlayerProperties.STOP));
         };
     }
 
@@ -68,25 +68,31 @@ public class PlayerControl extends Control {
             // when state is 'play' the
             // 'pause {1}' command is given,
             // to pause the player.
-            if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PLAY)) {
-                executeCommand(PlayerProperties.PAUSE, "1");
+            if ((serverStatus.getStatus().getState()).equals(PlayerProperties.PLAY)) {
+                executeCommand(new ServerCommand(PlayerProperties.PAUSE, "1"));
 
-            } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.PAUSE)) {
-                executeCommand(PlayerProperties.PAUSE, "0");
+            } else if ((serverStatus.getStatus().getState()).equals(PlayerProperties.PAUSE)) {
+                executeCommand(new ServerCommand(PlayerProperties.PAUSE, "0"));
 
-            } else if (((String)serverStatus.getStatus().getState()).equals(PlayerProperties.STOP)) {
-                executeCommand(PlayerProperties.PLAY, null);
+            } else if ((serverStatus.getStatus().getState()).equals(PlayerProperties.STOP)) {
+                executeCommand(new ServerCommand(PlayerProperties.PLAY));
             }
         };
 
     }
 
-    private void executeCommand(String command, String arg) {
+    public ActionListener getNextListener() {
+        return ActionEvent -> {
+            executeCommand(new ServerCommand(PlayerProperties.NEXT));
+        };
+    }
+
+    private void executeCommand(ServerCommand serverCommand) {
         Runnable runnable = () -> {
             Endpoint endpoint = new Endpoint(host, port);
             String reply = null;
             try {
-                reply = endpoint.sendCommand(new ServerCommand(command, arg));
+                reply = endpoint.sendCommand(serverCommand);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,11 +103,7 @@ public class PlayerControl extends Control {
         executorService.execute(runnable);
     }
 
-    public ActionListener getNextListener() {
-        return ActionEvent -> {
-            executeCommand(PlayerProperties.NEXT, null);
-        };
-    }
+
 
 
 
