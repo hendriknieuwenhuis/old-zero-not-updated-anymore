@@ -104,11 +104,11 @@ public class ViewTestApplicationView extends WindowAdapter {
     Initiate the controllers folderControl, playerExecutor & playlistControl.
      */
     private void initControllers() {
-        folderControl = new FolderControl(directory);
+        folderControl = new FolderControl(HOST, PORT, executorService, directory);
 
         // create PlaylistControl.
         playlistControl = new PlaylistControl(HOST, PORT, executorService, playlist, playlistTableModel);
-        playlist.addPlaylistListener(playlistControl.getPlaylistListener());
+
 
         playerControl = new PlayerControl(HOST, PORT, executorService, serverStatus);
         serverStatus.getStatus().getStateProperty().addPropertyListeners(playerControl.getStatePropertyListener());
@@ -128,13 +128,18 @@ public class ViewTestApplicationView extends WindowAdapter {
         SwingUtilities.invokeLater(() -> {
             applicationView = new ApplicationView();
             applicationView.addWindowListener(this);
+            folderControl.setFolderView(applicationView.getFolderView());
+            folderControl.init();
             applicationView.getFolderView().setModel(folderControl.getDirectory().getModel());
+
             applicationView.getPlaylistView().setModel(playlistTableModel);
             applicationView.getPlaylistView().getColumnModel().getColumn(0).setPreferredWidth(5);
-            folderControl.setFolderView(applicationView.getFolderView());
+
             playlistControl.setPlaylistView(applicationView.getPlaylistView());
+            playlistControl.init();
             playlistControl.setColumnWidth(0);
             playerControl.setPlayerView(applicationView.getPlayerView());
+            playerControl.init();
             currentSong.setView(applicationView.getSongView());
             applicationView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             applicationView.pack();

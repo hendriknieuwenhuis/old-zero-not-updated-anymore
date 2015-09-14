@@ -18,4 +18,6 @@ public abstract class Control {
         this.port = port;
         this.executorService = executorService;
     }
+
+    public abstract void init();
 }

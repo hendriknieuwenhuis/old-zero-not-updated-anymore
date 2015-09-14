@@ -39,6 +39,15 @@ public class PlaylistControl extends Control {
         this.playlistTableModel = playlistTableModel;
     }
 
+    /*
+    init(), creates a jpopupmenu, adds listeners to the popupmenu
+    and the playlisttablemodel to redraw the playlistView.
+     */
+    @Override
+    public void init() {
+        playlist.addPlaylistListener(getPlaylistListener());
+    }
+
     public void setColumnWidth(int column) {
 
         int width = 0;
@@ -71,11 +80,13 @@ public class PlaylistControl extends Control {
     }
 
 
-    public PlaylistListener getPlaylistListener() {
+    private PlaylistListener getPlaylistListener() {
         return (PlaylistEvent event) -> {
             playlistTableModel.setPlaylistTableModel(((Playlist) event.getSource()));
         };
     }
+
+
 
     public ListSelectionListener getListSelectionListener() {
 

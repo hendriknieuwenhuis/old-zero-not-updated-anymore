@@ -33,6 +33,8 @@ public class FolderControl extends Control {
 
     public FolderControl() {}
 
+
+
     public FolderControl(Directory directory) {
         this.directory = directory;
     }
@@ -45,6 +47,20 @@ public class FolderControl extends Control {
 
     public FolderControl(String host, int port, ExecutorService executorService, Directory directory) {
         super(host, port, executorService);
+        this.directory = directory;
+
+    }
+
+    @Override
+    public void init() {
+        // set listeners for folderview
+        folderView.addMouseListener(new TreeMouseListener(this.folderView));
+
+        // create popup menu.
+        popupMenu = new JPopupMenu();
+        JMenuItem itemOne = new JMenuItem("add");
+        itemOne.addActionListener(new MenuActionListener());
+        popupMenu.add(itemOne);
     }
 
     public void updateDirectory(List<String> entry) {
@@ -57,16 +73,6 @@ public class FolderControl extends Control {
 
     public void setFolderView(JTree folderView) {
         this.folderView = folderView;
-
-        // set listeners for folderview
-        folderView.addMouseListener(new TreeMouseListener(this.folderView));
-
-        // create popup menu.
-        popupMenu = new JPopupMenu();
-        JMenuItem itemOne = new JMenuItem("add");
-        itemOne.addActionListener(new MenuActionListener());
-        popupMenu.add(itemOne);
-
     }
 
 

@@ -43,12 +43,16 @@ public class PlayerControl extends Control {
 
     }
 
-    public void setPlayerView(PlayerView playerView) {
-        this.playerView = playerView;
+    @Override
+    public void init() {
         this.playerView.getButton("previous").addActionListener(getPreviousListener());
         this.playerView.getButton("stop").addActionListener(getStopListener());
         this.playerView.getButton("play").addActionListener(getPlayListener());
         this.playerView.getButton("next").addActionListener(getNextListener());
+    }
+
+    public void setPlayerView(PlayerView playerView) {
+        this.playerView = playerView;
     }
 
     public PlayerView getPlayerView() {
